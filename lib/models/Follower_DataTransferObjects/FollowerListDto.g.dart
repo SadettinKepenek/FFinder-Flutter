@@ -15,7 +15,13 @@ FollowerListDto _$FollowerListDtoFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['friendshipDate'] as String)
     ..isAccepted = json['isAccepted'] as bool
-    ..isActive = json['isActive'] as bool;
+    ..isActive = json['isActive'] as bool
+    ..user1 = json['user1'] == null
+        ? null
+        : UserListDto.fromJson(json['user1'] as Map<String, dynamic>)
+    ..user2 = json['user2'] == null
+        ? null
+        : UserListDto.fromJson(json['user2'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$FollowerListDtoToJson(FollowerListDto instance) =>
@@ -26,4 +32,6 @@ Map<String, dynamic> _$FollowerListDtoToJson(FollowerListDto instance) =>
       'friendshipDate': instance.friendshipDate?.toIso8601String(),
       'isAccepted': instance.isAccepted,
       'isActive': instance.isActive,
+      'user1': instance.user1,
+      'user2': instance.user2,
     };

@@ -26,7 +26,32 @@ UserDetailDto _$UserDetailDtoFromJson(Map<String, dynamic> json) {
     ..town = json['town'] as String
     ..country = json['country'] as String
     ..school = json['school'] as String
-    ..isActive = json['isActive'] as bool;
+    ..isActive = json['isActive'] as bool
+    ..followers = (json['followers'] as List)
+        ?.map((e) => e == null
+            ? null
+            : FollowerDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList()
+    ..comments = (json['comments'] as List)
+        ?.map((e) => e == null
+            ? null
+            : CommentDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList()
+    ..posts = (json['posts'] as List)
+        ?.map((e) => e == null
+            ? null
+            : PostDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList()
+    ..postRates = (json['postRates'] as List)
+        ?.map((e) => e == null
+            ? null
+            : PostRateDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList()
+    ..commentRates = (json['commentRates'] as List)
+        ?.map((e) => e == null
+            ? null
+            : CommentRateDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList();
 }
 
 Map<String, dynamic> _$UserDetailDtoToJson(UserDetailDto instance) =>
@@ -50,4 +75,9 @@ Map<String, dynamic> _$UserDetailDtoToJson(UserDetailDto instance) =>
       'country': instance.country,
       'school': instance.school,
       'isActive': instance.isActive,
+      'followers': instance.followers,
+      'comments': instance.comments,
+      'posts': instance.posts,
+      'postRates': instance.postRates,
+      'commentRates': instance.commentRates,
     };

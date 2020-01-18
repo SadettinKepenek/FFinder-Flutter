@@ -16,9 +16,12 @@ PostRateDetailDto _$PostRateDetailDtoFromJson(Map<String, dynamic> json) {
     ..rateDate = json['rateDate'] == null
         ? null
         : DateTime.parse(json['rateDate'] as String)
+    ..owner = json['owner'] == null
+        ? null
+        : UserDetailDto.fromJson(json['owner'] as Map<String, dynamic>)
     ..post = json['post'] == null
         ? null
-        : PostListDto.fromJson(json['post'] as Map<String, dynamic>);
+        : PostDetailDto.fromJson(json['post'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$PostRateDetailDtoToJson(PostRateDetailDto instance) =>
@@ -29,5 +32,6 @@ Map<String, dynamic> _$PostRateDetailDtoToJson(PostRateDetailDto instance) =>
       'isActive': instance.isActive,
       'isLike': instance.isLike,
       'rateDate': instance.rateDate?.toIso8601String(),
+      'owner': instance.owner,
       'post': instance.post,
     };
