@@ -15,7 +15,13 @@ CommentRateListDto _$CommentRateListDtoFromJson(Map<String, dynamic> json) {
         : DateTime.parse(json['rateDate'] as String)
     ..commentId = json['commentId'] as String
     ..ownerId = json['ownerId'] as String
-    ..isActive = json['isActive'] as bool;
+    ..isActive = json['isActive'] as bool
+    ..owner = json['owner'] == null
+        ? null
+        : UserListDto.fromJson(json['owner'] as Map<String, dynamic>)
+    ..comment = json['comment'] == null
+        ? null
+        : CommentListDto.fromJson(json['comment'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$CommentRateListDtoToJson(CommentRateListDto instance) =>
@@ -26,4 +32,6 @@ Map<String, dynamic> _$CommentRateListDtoToJson(CommentRateListDto instance) =>
       'commentId': instance.commentId,
       'ownerId': instance.ownerId,
       'isActive': instance.isActive,
+      'owner': instance.owner,
+      'comment': instance.comment,
     };

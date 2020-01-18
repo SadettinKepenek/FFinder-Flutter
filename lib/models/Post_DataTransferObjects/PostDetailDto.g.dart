@@ -15,7 +15,20 @@ PostDetailDto _$PostDetailDtoFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['publishDate'] as String)
     ..isActive = json['isActive'] as bool
-    ..ownerId = json['ownerId'] as String;
+    ..ownerId = json['ownerId'] as String
+    ..owner = json['owner'] == null
+        ? null
+        : UserDetailDto.fromJson(json['owner'] as Map<String, dynamic>)
+    ..comments = (json['comments'] as List)
+        ?.map((e) => e == null
+            ? null
+            : CommentDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList()
+    ..rates = (json['rates'] as List)
+        ?.map((e) => e == null
+            ? null
+            : PostRateDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.toList();
 }
 
 Map<String, dynamic> _$PostDetailDtoToJson(PostDetailDto instance) =>
@@ -26,4 +39,7 @@ Map<String, dynamic> _$PostDetailDtoToJson(PostDetailDto instance) =>
       'publishDate': instance.publishDate?.toIso8601String(),
       'isActive': instance.isActive,
       'ownerId': instance.ownerId,
+      'owner': instance.owner,
+      'comments': instance.comments,
+      'rates': instance.rates,
     };

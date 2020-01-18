@@ -1,3 +1,4 @@
+import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'FollowerDetailDto.g.dart';
@@ -10,6 +11,8 @@ class FollowerDetailDto {
   DateTime friendshipDate;
   bool isAccepted;
   bool isActive;
+  UserDetailDto user1;
+  UserDetailDto user2;
   FollowerDetailDto() {}
 
   factory FollowerDetailDto.fromJson(Map<String, dynamic> json) =>

@@ -1,3 +1,5 @@
+import 'package:ffinder/models/Comment_DataTransferObjects/CommentDetailDto.dart';
+import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'CommentRateDetailDto.g.dart';
@@ -10,6 +12,8 @@ class CommentRateDetailDto {
   String commentId;
   String ownerId;
   bool isActive;
+  UserDetailDto owner;
+  CommentDetailDto comment;
   CommentRateDetailDto() {}
 
   factory CommentRateDetailDto.fromJson(Map<String, dynamic> json) =>
