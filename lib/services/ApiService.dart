@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelData.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
@@ -12,12 +13,13 @@ class ApiService {
     String data = jsonEncode(loginRequestDto);
     Response response = await post(url, headers: headers, body: data);
     int statusCode = response.statusCode;
-    if (statusCode == 200) {
-      String responseBody = response.body;
+          String responseBody = response.body;
       Map<String, dynamic> json=jsonDecode(responseBody);
+
+    if (statusCode == 200) {
       UserLoginResponseDto loginResponseDto=UserLoginResponseDto.fromJson(json["data"]);
       return loginResponseDto;
     }
-    return null;
+    return HttpResponseModel.init(message: json["message"],statusCode: json["statusCode"]);
   }
 }
