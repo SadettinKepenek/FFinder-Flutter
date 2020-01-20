@@ -1,3 +1,4 @@
+import 'package:ffinder/screens/LoginPage.dart';
 import 'package:ffinder/screens/homepage.dart';
 import 'package:flutter/material.dart';
 // Test
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home: new Material(
-        child: HomePage(),
+        child: LoginPage(),
       ),
     );
   }
