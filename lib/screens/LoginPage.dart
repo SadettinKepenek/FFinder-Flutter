@@ -11,51 +11,62 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
   final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(25.0),
-        child: Center(
-      child: Form(
-        key: formKey,
-
-        child: Column(
-          children: <Widget>[
-            userNameTextField(),
-            passwordTextField(),
-            submitButton()
-          ],
-        ),
-      ),
-    ));
+    return Center(
+        child: Container(
+            margin: EdgeInsets.all(25.0),
+            child: Center(
+              child: Form(
+                autovalidate: true,
+                key: formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    userNameTextField(),
+                    passwordTextField(),
+                    submitButton()
+                  ],
+                ),
+              ),
+            )));
   }
 
   userNameTextField() {
     return TextFormField(
-
       decoration: InputDecoration(
-          labelText: "Username", hintText: "Kullanıcı Adını Girin"),
-          validator: usernameValidator,
+          labelText: "Username",
+          icon: Icon(Icons.person),
+          hintText: "Kullanıcı Adını Girin"),
+      validator: usernameValidator,
     );
   }
+
   passwordTextField() {
     return TextFormField(
       decoration: InputDecoration(
-          labelText: "Password", hintText: "Şifreyi Girin"),
-          validator: passwordValidator,
-
+          labelText: "Password",
+          icon: Icon(Icons.vpn_key),
+          hintText: "Şifreyi Girin"),
+      validator: passwordValidator,
+      obscureText: true,
     );
   }
+
   submitButton() {
-    return RaisedButton(
-      child: Text("Giriş"),
-
-      onPressed: (){
-        if(formKey.currentState.validate()){
-           formKey.currentState.save();
-          
-        }
-      },
-
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        RaisedButton(
+          child: Text(
+            "Giriş",
+          ),
+          onPressed: () {
+            if (formKey.currentState.validate()) {
+              formKey.currentState.save();
+            }
+          },
+        )
+      ],
     );
   }
-
 }

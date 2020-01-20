@@ -1,6 +1,6 @@
 import 'package:ffinder/screens/LoginPage.dart';
-import 'package:ffinder/screens/homepage.dart';
 import 'package:flutter/material.dart';
+
 // Test
 void main() => runApp(MyApp());
 
@@ -10,11 +10,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.blue,
+        buttonColor: Colors.white,
+        buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary)
       ),
-      home: new Material(
-        child: LoginPage(),
-      ),
+      home: Scaffold(
+          body: LoginPage(),
+          appBar: AppBar(
+            title: Text("FFinder"),
+          )),
     );
   }
 }
