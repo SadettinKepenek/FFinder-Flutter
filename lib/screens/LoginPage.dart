@@ -76,11 +76,32 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
                   context,
                   MaterialPageRoute(builder: (context) => MainPage()),
                 );
-              } else {}
+              } else {
+                _showDialog();
+              }
             }
           },
         )
       ],
     );
+  }
+
+  void _showDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Hata!"),
+            content: Text(
+                "Kullanıcı girişi başarısız oldu lütfen bilgilerinizi kontrol ediniz"),
+            actions: <Widget>[
+              FlatButton(
+                  child: Text("Tamam"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  })
+            ],
+          );
+        });
   }
 }
