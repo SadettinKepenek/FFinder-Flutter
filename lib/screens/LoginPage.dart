@@ -1,5 +1,7 @@
 import 'package:ffinder/mixins/LoginMixins/LoginValidator_mixin.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
+import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:ffinder/screens/MainPage.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,11 +66,17 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
           child: Text(
             "Giriş",
           ),
-          onPressed: () {
+          onPressed: () async {
             if (formKey.currentState.validate()) {
               formKey.currentState.save();
 
-              ApiService.loginRequest(loginRequestDto);
+              var response = await ApiService.loginRequest(loginRequestDto);
+              if (response is UserLoginResponseDto) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MainPage()),
+                );
+              } else {}
             }
           },
         )

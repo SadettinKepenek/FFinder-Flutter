@@ -11,9 +11,10 @@ class HttpResponseModelData<T> {
         message = json['message'],
         statusCode = json["statusCode"];
   Map<String, dynamic> toJson() =>
-    {
-      'data': data,
-      'message': message,
-      'statusCode':statusCode
-    };
+      {'data': data, 'message': message, 'statusCode': statusCode};
+
+  HttpResponseModelData.init({message, statusCode}) {
+    this.message = message;
+    this.statusCode = statusCode;
+  }
 }
