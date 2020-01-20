@@ -77,7 +77,7 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
                   MaterialPageRoute(builder: (context) => MainPage()),
                 );
               } else {
-                _showDialog();
+                _snackBar();
               }
             }
           },
@@ -86,22 +86,17 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
     );
   }
 
-  void _showDialog() {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Hata!"),
-            content: Text(
-                "Kullanıcı girişi başarısız oldu lütfen bilgilerinizi kontrol ediniz"),
-            actions: <Widget>[
-              FlatButton(
-                  child: Text("Tamam"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  })
-            ],
-          );
-        });
+  void _snackBar() {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6.0,
+      content: Text(
+          "Kullanıcı girişi yapılırken hata.Lütfen bilgilerinizi kontrol ediniz"),
+      action: SnackBarAction(
+          label: "Tekrar Dene",
+          onPressed: () {
+            // Nothing
+          }),
+    ));
   }
 }
