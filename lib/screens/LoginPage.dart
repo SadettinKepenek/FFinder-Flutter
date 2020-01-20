@@ -76,11 +76,27 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
                   context,
                   MaterialPageRoute(builder: (context) => MainPage()),
                 );
-              } else {}
+              } else {
+                _snackBar();
+              }
             }
           },
         )
       ],
     );
+  }
+
+  void _snackBar() {
+    Scaffold.of(context).showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6.0,
+      content: Text(
+          "Kullanıcı girişi yapılırken hata.Lütfen bilgilerinizi kontrol ediniz"),
+      action: SnackBarAction(
+          label: "Tekrar Dene",
+          onPressed: () {
+            // Nothing
+          }),
+    ));
   }
 }
