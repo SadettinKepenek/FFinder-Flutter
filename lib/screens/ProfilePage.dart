@@ -37,10 +37,6 @@ class ProfilePageState extends State<ProfilePage> {
     profileDto = response;
     mainPageWidget = _mainPageWidgetCompleted();
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
-
-    for (var item in profileDto.post) {
-      print(item.postBody);
-    }
   }
 
   @override
