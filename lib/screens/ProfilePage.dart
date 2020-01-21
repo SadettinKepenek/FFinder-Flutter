@@ -2,6 +2,7 @@ import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key key}) : super(key: key) {}
@@ -34,6 +35,11 @@ class ProfilePageState extends State<ProfilePage> {
     var response = await ApiService.getMyProfile();
     profileDto = response;
     mainPageWidget = _mainPageWidgetCompleted();
+    profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
+
+    for (var item in profileDto.post) {
+      print(item.postBody);
+    }
   }
 
   @override
@@ -50,75 +56,213 @@ class ProfilePageState extends State<ProfilePage> {
   _buildTop() {
     return Column(
       children: <Widget>[
-        Card(
-          child: Column(
-            children: <Widget>[
-              SizedBox(
-                height: 12,
-                width: MediaQuery.of(context).size.width,
-              ),
-              _buildProfilePhoto(),
-              SizedBox(
-                height: 12,
-                width: MediaQuery.of(context).size.width,
-              ),
-              _buildProfileName(),
-              SizedBox(
-                height: 12,
-                width: MediaQuery.of(context).size.width,
-              ),
-              Text("${profileDto.aboutMe}"),
-              SizedBox(
-                height: 12,
-                width: MediaQuery.of(context).size.width,
-              ),
-            ],
+        Padding(
+          padding: EdgeInsets.all(0),
+          child: Card(
+            child: Column(
+              children: <Widget>[
+                _buildProfilePhoto(),
+              ],
+            ),
           ),
-        ),
-        Divider(
-          height: 1,
         )
       ],
     );
   }
 
   _buildProfilePhoto() {
-    return CircleAvatar(
-      backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
-      radius: 50,
-      backgroundColor: Colors.transparent,
-    );
-  }
-
-  _buildProfileName() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Column(
           children: <Widget>[
-            Text(
-                "${profileDto.firstname} ${profileDto.lastname.toUpperCase()}"),
+            CircleAvatar(
+              backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
+              radius: 55,
+              backgroundColor: Colors.transparent,
+            ),
+            SizedBox(
+              height: 0.1,
+              width: 10,
+            ),
           ],
         ),
-        SizedBox(height: 0.1,width: 5,),
-        Column(
-          children: <Widget>[
-            IconButton(icon: Icon(Icons.group_add),onPressed: (){},)
-          ],
+        SizedBox(
+          height: 100,
+          width: MediaQuery.of(context).size.width - 150,
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text("Gönderi Sayısı"),
+                  Text("Takipçi"),
+                  Text("Takip Edilen"),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text("${profileDto.post.length}"),
+                  Text("${profileDto.follower.length}"),
+                  Text("0"),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    child: Text("Takip Et"),
+                    onPressed: () {},
+                  )
+                ],
+              )
+            ],
+          ),
         )
       ],
     );
   }
 
-  _mainPageWidgetCompleted() {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[_buildTop()],
-      ),
+  List<Widget> _buildPostGridItems() {
+    assert(profileDto != null && profileDto.post != null);
+
+    var items = List<Widget>();
+    for (var post in profileDto.post) {
+      var column = Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            child: Row(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                   Row(children: <Widget>[
+                      CircleAvatar(
+                      backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
+                      radius: 15,
+                      backgroundColor: Colors.transparent,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "berkayalcin",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                   ],)
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Image.network(
+            post.postImageUrl,
+            height: 245,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.fill,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.mood),
+                iconSize: 24,
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(Icons.mood_bad),
+                onPressed: () {},
+                iconSize: 24,
+              ),
+              IconButton(
+                icon: Icon(Icons.comment),
+                onPressed: () {},
+                iconSize: 24,
+              ),
+              IconButton(
+                icon: Icon(Icons.share),
+                onPressed: () {},
+                iconSize: 24,
+              ),
+            ],
+          ),
+          Padding(
+            child: Row(
+              children: <Widget>[
+                Text(
+                  "${post.rates.where((data) => data.isLike).toList().length} Likes",
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 0.1,
+                  width: 5,
+                ),
+                Text(
+                  "${post.rates.where((data) => data.isLike == false).toList().length} Dislikes",
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 3),
+          ),
+          Padding(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Text(post.postBody, maxLines: 4),
+                Text(
+                  timeago.format(post.publishDate),
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          ),
+          Divider(
+            color: Theme.of(context).primaryColor,
+            thickness: 0.35,
+          ),
+        ],
+      );
+
+      items.add(column);
+    }
+    return items;
+  }
+
+  _buildPosts() {
+    var grid = GridView.count(
+        crossAxisCount: 1,
+        physics: ScrollPhysics(),
+        shrinkWrap: true,
+        padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
+        children: _buildPostGridItems());
+
+    return Expanded(
+      child: grid,
     );
+  }
+
+  _mainPageWidgetCompleted() {
+    var container = Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[_buildTop(), _buildPosts()],
+    );
+    return container;
   }
 
   _mainPageWidgetLoading() {
