@@ -29,19 +29,24 @@ class ApiService {
   }
 
   static Future<UserDetailDto> getMyProfile() async {
-    String url = "";
+    String url = "https://ffindernet.herokuapp.com/api/Users/";
+    var authToken = (await StorageService.getAuth()).token;
+
     Map<String, String> headers = {
       "Content-type": "application/json",
-      "Authorization":"Beraer ${(await StorageService.getAuth()).token}"
+      "Authorization": "Bearer $authToken"
     };
     Response response = await get(url, headers: headers);
     int statusCode = response.statusCode;
     String responseBody = response.body;
-    Map<String, dynamic> json = jsonDecode(responseBody);
-    if(statusCode==200){
-      UserDetailDto dto=UserDetailDto.fromJson(json["data"]);
-      return dto;
+    if (responseBody != "") {
+      Map<String, dynamic> json = jsonDecode(responseBody);
+      if (statusCode == 200) {
+        UserDetailDto dto = UserDetailDto.fromJson(json["data"]);
+        return dto;
+      }
     }
+
     return null;
   }
 }
