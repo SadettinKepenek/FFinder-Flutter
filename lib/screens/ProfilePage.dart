@@ -47,16 +47,76 @@ class ProfilePageState extends State<ProfilePage> {
     return mainPageWidget;
   }
 
+  _buildTop() {
+    return Column(
+      children: <Widget>[
+        Card(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 12,
+                width: MediaQuery.of(context).size.width,
+              ),
+              _buildProfilePhoto(),
+              SizedBox(
+                height: 12,
+                width: MediaQuery.of(context).size.width,
+              ),
+              _buildProfileName(),
+              SizedBox(
+                height: 12,
+                width: MediaQuery.of(context).size.width,
+              ),
+              Text("${profileDto.aboutMe}"),
+              SizedBox(
+                height: 12,
+                width: MediaQuery.of(context).size.width,
+              ),
+            ],
+          ),
+        ),
+        Divider(
+          height: 1,
+        )
+      ],
+    );
+  }
+
+  _buildProfilePhoto() {
+    return CircleAvatar(
+      backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
+      radius: 50,
+      backgroundColor: Colors.transparent,
+    );
+  }
+
+  _buildProfileName() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            Text(
+                "${profileDto.firstname} ${profileDto.lastname.toUpperCase()}"),
+          ],
+        ),
+        SizedBox(height: 0.1,width: 5,),
+        Column(
+          children: <Widget>[
+            IconButton(icon: Icon(Icons.group_add),onPressed: (){},)
+          ],
+        )
+      ],
+    );
+  }
+
   _mainPageWidgetCompleted() {
     return Container(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Center(
-            child: Text("Profile Page of ${profileDto.userName}"),
-          )
-        ],
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[_buildTop()],
       ),
     );
   }
