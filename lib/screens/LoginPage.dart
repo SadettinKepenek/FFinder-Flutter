@@ -16,6 +16,10 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
   UserLoginRequestDto loginRequestDto = new UserLoginRequestDto();
   @override
   Widget build(BuildContext context) {
+    return _buildPage();
+  }
+
+  _buildPage() {
     return Center(
         child: Container(
             margin: EdgeInsets.all(25.0),

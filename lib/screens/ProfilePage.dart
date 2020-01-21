@@ -19,8 +19,10 @@ class ProfilePageState extends State<ProfilePage> {
   _buildContainer() {
     return Container(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-
+         Center(child:  Text("Profile Page"),)
         ],
       ),
     );
