@@ -153,7 +153,7 @@ class ProfilePageState extends State<ProfilePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(5, 5, 8, 5),
+            padding: EdgeInsets.fromLTRB(5, 0, 8, 5),
             child: Row(
               children: <Widget>[
                 Column(
@@ -185,7 +185,8 @@ class ProfilePageState extends State<ProfilePage> {
             padding: EdgeInsets.symmetric(horizontal: .5),
             child: Image.network(
               post.postImageUrl,
-              height: 290,
+              height: 280,
+              cacheHeight: 280,
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.fill,
             ),
@@ -241,19 +242,34 @@ class ProfilePageState extends State<ProfilePage> {
                 ),
               ],
             ),
-            padding: EdgeInsets.fromLTRB(10, 0, 10, 3),
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 2),
           ),
           Padding(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Text(post.postBody, maxLines: 5),
+                RichText(
+                  maxLines: 3,
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: post.owner.userName,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    TextSpan(text: " "),
+                    TextSpan(
+                      text: post.postBody,
+                      style: DefaultTextStyle.of(context).style,
+                    )
+                  ]),
+                ),
                 SizedBox(
-                  height: 5,
+                  height: .5,
                 ),
                 Text(
                   timeago.format(post.publishDate),
+                  maxLines: 1,
                   style: TextStyle(
                       fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
                 ),
@@ -278,7 +294,7 @@ class ProfilePageState extends State<ProfilePage> {
         crossAxisCount: 1,
         physics: ScrollPhysics(),
         shrinkWrap: true,
-        childAspectRatio: (MediaQuery.of(context).size.width / 500),
+        childAspectRatio: (MediaQuery.of(context).size.width / 480),
         padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
         children: _buildPostGridItems());
 
