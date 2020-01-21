@@ -79,7 +79,7 @@ class ProfilePageState extends State<ProfilePage> {
           children: <Widget>[
             CircleAvatar(
               backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
-              radius: 55,
+              radius: 50,
               backgroundColor: Colors.transparent,
             ),
             SizedBox(
@@ -89,12 +89,12 @@ class ProfilePageState extends State<ProfilePage> {
           ],
         ),
         SizedBox(
-          height: 100,
+          height: 110,
           width: MediaQuery.of(context).size.width - 150,
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 15,
+                height: 20,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -115,12 +115,24 @@ class ProfilePageState extends State<ProfilePage> {
                   Text("0"),
                 ],
               ),
+              SizedBox(
+                height: 5,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   RaisedButton(
                     child: Text("Takip Et"),
                     onPressed: () {},
+                    elevation: 10,
+                  ),
+                  SizedBox(
+                    width: 2,
+                  ),
+                  RaisedButton(
+                    child: Text("Mesaj"),
+                    onPressed: () {},
+                    elevation: 10,
                   )
                 ],
               )
@@ -137,38 +149,53 @@ class ProfilePageState extends State<ProfilePage> {
     var items = List<Widget>();
     for (var post in profileDto.post) {
       var column = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            padding: EdgeInsets.fromLTRB(5, 5, 8, 5),
             child: Row(
               children: <Widget>[
                 Column(
                   children: <Widget>[
-                   Row(children: <Widget>[
-                      CircleAvatar(
-                      backgroundImage: NetworkImage(profileDto.profilePhotoUrl),
-                      radius: 15,
-                      backgroundColor: Colors.transparent,
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      "berkayalcin",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                   ],)
+                    Row(
+                      children: <Widget>[
+                        CircleAvatar(
+                          backgroundImage:
+                              NetworkImage(profileDto.profilePhotoUrl),
+                          radius: 15,
+                          backgroundColor: Colors.transparent,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "berkayalcin",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
                   ],
                 ),
               ],
             ),
           ),
-          Image.network(
-            post.postImageUrl,
-            height: 245,
-            width: MediaQuery.of(context).size.width,
-            fit: BoxFit.fill,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: .5),
+            child: Image.network(
+              post.postImageUrl,
+              height: 290,
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.fill,
+            ),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(width: .5, color: Colors.blueGrey),
+                    top: BorderSide(width: .5, color: Colors.blueGrey),
+                    left: BorderSide(width: .5, color: Colors.blueGrey),
+                    right: BorderSide(width: .5, color: Colors.blueGrey)),
+                shape: BoxShape.rectangle),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -221,7 +248,10 @@ class ProfilePageState extends State<ProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Text(post.postBody, maxLines: 4),
+                Text(post.postBody, maxLines: 5),
+                SizedBox(
+                  height: 5,
+                ),
                 Text(
                   timeago.format(post.publishDate),
                   style: TextStyle(
@@ -248,6 +278,7 @@ class ProfilePageState extends State<ProfilePage> {
         crossAxisCount: 1,
         physics: ScrollPhysics(),
         shrinkWrap: true,
+        childAspectRatio: (MediaQuery.of(context).size.width / 500),
         padding: EdgeInsets.fromLTRB(0, 5, 0, 5),
         children: _buildPostGridItems());
 
