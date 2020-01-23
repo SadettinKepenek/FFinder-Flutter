@@ -1,3 +1,6 @@
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
@@ -19,6 +22,9 @@ class ProfilePageState extends State<ProfilePage> {
   UserDetailDto profileDto;
   Widget _mainPageWidget;
   UserLoginResponseDto loginResponseDto;
+  var likeKeys = Map<String, Widget>();
+  var likeColors = Map<String, Color>();
+
   Widget get mainPageWidget {
     if (profileDto == null) {
       return _mainPageWidgetLoading();
@@ -36,9 +42,9 @@ class ProfilePageState extends State<ProfilePage> {
   _loadProfile() async {
     var response = await ApiService.getMyProfile();
     profileDto = response;
-    mainPageWidget = _mainPageWidgetCompleted();
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
     loginResponseDto = await StorageService.getAuth();
+    mainPageWidget = _mainPageWidgetCompleted();
   }
 
   @override
@@ -189,12 +195,17 @@ class ProfilePageState extends State<ProfilePage> {
   _buildPostBody(post) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: .5),
-      child: Image.network(
-        post.postImageUrl,
-        height: 280,
-        cacheHeight: 280,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.fill,
+      child: GestureDetector(
+        onDoubleTap: () {
+          _like(post);
+        },
+        child: Image.network(
+          post.postImageUrl,
+          height: 280,
+          cacheHeight: 280,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.fill,
+        ),
       ),
       decoration: BoxDecoration(
           border: Border(
@@ -207,36 +218,134 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   bool _isLiked(PostDetailDto dto) {
-    assert(loginResponseDto != null);
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && rate.isLike);
     return isLike;
   }
 
   bool _isDisliked(PostDetailDto dto) {
-    assert(loginResponseDto != null);
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && !rate.isLike);
     return isLike;
   }
 
+  void _removeRate(PostDetailDto dto) {
+    ApiService.deleteRate(dto.postId, loginResponseDto.id);
+    var willDeleted = this
+        .profileDto
+        .post
+        .firstWhere((p) => p.postId == dto.postId)
+        .rates
+        .firstWhere((rate) =>
+            rate.ownerId == loginResponseDto.id && rate.postId == dto.postId);
+    this
+        .profileDto
+        .post
+        .firstWhere((p) => p.postId == dto.postId)
+        .rates
+        .remove(willDeleted);
+  }
+
+  void _switchRate(PostDetailDto dto, bool isLike) {
+    if (isLike) {
+      var dislikeColor = likeColors["DislikeButton_${dto.postId}"];
+      if (dislikeColor == Colors.red) {
+        _removeRate(dto);
+      }
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      var likeColor = likeColors["LikeButton_${dto.postId}"];
+      if (likeColor == Colors.green) {
+        _removeRate(dto);
+      }
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    }
+  }
+
+  void _like(PostDetailDto dto) {
+    _switchRate(dto, true);
+    var currentColor = likeColors["LikeButton_${dto.postId}"];
+
+    if (currentColor == Colors.green) {
+      // remove request
+      _removeRate(dto);
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      _rateRequest(true, dto.postId);
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.green;
+      });
+    }
+  }
+
+  void _dislike(PostDetailDto dto) {
+    var currentColor = likeColors["DislikeButton_${dto.postId}"];
+
+    _switchRate(dto, false);
+
+    if (currentColor == Colors.red) {
+      // remove request
+      _removeRate(dto);
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      _rateRequest(false, dto.postId);
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.red;
+      });
+    }
+  }
+
+  _rateRequest(bool isLike, String postId) {
+    PostRateAddDto postRateAddDto = new PostRateAddDto();
+    postRateAddDto.isActive = true;
+    postRateAddDto.isLike = isLike;
+    postRateAddDto.ownerId = loginResponseDto.id;
+    postRateAddDto.postId = postId;
+    postRateAddDto.rateDate = DateTime.now();
+
+    var dto = new PostRateDetailDto();
+    dto.isActive = true;
+    dto.isLike = isLike;
+    dto.ownerId = loginResponseDto.id;
+    dto.postId = postId;
+    dto.rateDate = DateTime.now();
+    this.profileDto.post.firstWhere((p) => p.postId == postId).rates.add(dto);
+
+    ApiService.addRate(postRateAddDto);
+  }
+
   _buildPostActionButtons(PostDetailDto dto) {
+    var likeColor = _isLiked(dto) ? Colors.green : Colors.blueGrey;
+    var dislikeColor = _isDisliked(dto) ? Colors.red : Colors.blueGrey;
+    likeColors.putIfAbsent("LikeButton_${dto.postId}", () => likeColor);
+    likeColors.putIfAbsent("DislikeButton_${dto.postId}", () => dislikeColor);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         IconButton(
           icon: Icon(Icons.mood),
           iconSize: 24,
-          color: _isLiked(dto) ? Colors.green : Colors.black,
+          color: likeColors["LikeButton_${dto.postId}"],
           onPressed: () {
-            print(dto.postId);
+            _like(dto);
           },
         ),
         IconButton(
           icon: Icon(Icons.mood_bad),
-          onPressed: () {},
+          onPressed: () {
+            _dislike(dto);
+          },
           iconSize: 24,
-          color: _isDisliked(dto) ? Colors.red : Colors.black,
+          color: likeColors["DislikeButton_${dto.postId}"],
         ),
         IconButton(
           icon: Icon(Icons.comment),
@@ -257,7 +366,7 @@ class ProfilePageState extends State<ProfilePage> {
       child: Row(
         children: <Widget>[
           Text(
-            "${post.rates.where((data) => data.isLike).toList().length} Likes",
+            "${this.profileDto.post.firstWhere((p) => p.postId == post.postId).rates.where((data) => data.isLike).toList().length} Likes",
             style: TextStyle(
                 fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
           ),
@@ -266,7 +375,7 @@ class ProfilePageState extends State<ProfilePage> {
             width: 5,
           ),
           Text(
-            "${post.rates.where((data) => data.isLike == false).toList().length} Dislikes",
+            "${this.profileDto.post.firstWhere((p) => p.postId == post.postId).rates.where((data) => data.isLike == false).toList().length} Dislikes",
             style: TextStyle(
                 fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
           ),
