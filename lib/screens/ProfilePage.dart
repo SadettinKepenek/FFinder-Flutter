@@ -234,7 +234,9 @@ class ProfilePageState extends State<ProfilePage> {
         ),
         IconButton(
           icon: Icon(Icons.mood_bad),
-          onPressed: () {},
+          onPressed: () {
+            print(dto.postId);
+          },
           iconSize: 24,
           color: _isDisliked(dto) ? Colors.red : Colors.black,
         ),
