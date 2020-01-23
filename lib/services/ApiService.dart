@@ -6,7 +6,7 @@ import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dar
 import 'package:http/http.dart';
 
 import 'StorageService.dart';
-
+export 'StorageService.dart';
 class ApiService {
   static Future<UserLoginResponseDto> loginRequest(
       UserLoginRequestDto loginRequestDto) async {

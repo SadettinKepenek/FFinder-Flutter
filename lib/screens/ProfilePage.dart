@@ -1,5 +1,6 @@
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
+import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class ProfilePage extends StatefulWidget {
 class ProfilePageState extends State<ProfilePage> {
   UserDetailDto profileDto;
   Widget _mainPageWidget;
-
+  UserLoginResponseDto loginResponseDto;
   Widget get mainPageWidget {
     if (profileDto == null) {
       return _mainPageWidgetLoading();
@@ -37,6 +38,7 @@ class ProfilePageState extends State<ProfilePage> {
     profileDto = response;
     mainPageWidget = _mainPageWidgetCompleted();
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
+    loginResponseDto = await StorageService.getAuth();
   }
 
   @override
@@ -138,6 +140,15 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   _buildProfile() {
+    return Column(
+      children: <Widget>[
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[_buildProfilePhoto(), _buildProfileInfo()],
+        ),
+      ],
+    );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -195,19 +206,37 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _buildPostActionButtons() {
+  bool _isLiked(PostDetailDto dto) {
+    assert(loginResponseDto != null);
+    var isLike = dto.rates
+        .any((rate) => rate.ownerId == loginResponseDto.id && rate.isLike);
+    return isLike;
+  }
+
+  bool _isDisliked(PostDetailDto dto) {
+    assert(loginResponseDto != null);
+    var isLike = dto.rates
+        .any((rate) => rate.ownerId == loginResponseDto.id && !rate.isLike);
+    return isLike;
+  }
+
+  _buildPostActionButtons(PostDetailDto dto) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         IconButton(
           icon: Icon(Icons.mood),
           iconSize: 24,
-          onPressed: () {},
+          color: _isLiked(dto) ? Colors.green : Colors.black,
+          onPressed: () {
+            print(dto.postId);
+          },
         ),
         IconButton(
           icon: Icon(Icons.mood_bad),
           onPressed: () {},
           iconSize: 24,
+          color: _isDisliked(dto) ? Colors.red : Colors.black,
         ),
         IconButton(
           icon: Icon(Icons.comment),
@@ -294,7 +323,7 @@ class ProfilePageState extends State<ProfilePage> {
         children: <Widget>[
           _buildPostImageTop(),
           _buildPostBody(post),
-          _buildPostActionButtons(),
+          _buildPostActionButtons(post),
           _buildPostLikes(post),
           _buildPostInfo(post),
           Divider(
