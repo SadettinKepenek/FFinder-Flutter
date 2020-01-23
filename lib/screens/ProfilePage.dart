@@ -1,3 +1,6 @@
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
@@ -19,6 +22,9 @@ class ProfilePageState extends State<ProfilePage> {
   UserDetailDto profileDto;
   Widget _mainPageWidget;
   UserLoginResponseDto loginResponseDto;
+  var likeKeys = Map<String, Widget>();
+  var likeColors = Map<String, Color>();
+
   Widget get mainPageWidget {
     if (profileDto == null) {
       return _mainPageWidgetLoading();
@@ -36,9 +42,9 @@ class ProfilePageState extends State<ProfilePage> {
   _loadProfile() async {
     var response = await ApiService.getMyProfile();
     profileDto = response;
-    mainPageWidget = _mainPageWidgetCompleted();
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
     loginResponseDto = await StorageService.getAuth();
+    mainPageWidget = _mainPageWidgetCompleted();
   }
 
   @override
@@ -207,38 +213,69 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   bool _isLiked(PostDetailDto dto) {
-    assert(loginResponseDto != null);
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && rate.isLike);
     return isLike;
   }
 
   bool _isDisliked(PostDetailDto dto) {
-    assert(loginResponseDto != null);
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && !rate.isLike);
     return isLike;
   }
 
+  void _removeRate(PostDetailDto dto) {
+    
+  }
+
+  void _switchRate(PostDetailDto dto, bool isLike) {}
+
+  _rateRequest(bool isLike, String postId) {
+    PostRateAddDto postRateAddDto = new PostRateAddDto();
+    postRateAddDto.isActive = true;
+    postRateAddDto.isLike = isLike;
+    postRateAddDto.ownerId = loginResponseDto.id;
+    postRateAddDto.postId = postId;
+    postRateAddDto.rateDate = DateTime.now();
+    ApiService.addRate(postRateAddDto);
+  }
+
   _buildPostActionButtons(PostDetailDto dto) {
+    var likeColor = _isLiked(dto) ? Colors.green : Colors.blueGrey;
+    var dislikeColor = _isDisliked(dto) ? Colors.red : Colors.blueGrey;
+    likeColors.putIfAbsent("LikeButton_${dto.postId}", () => likeColor);
+    likeColors.putIfAbsent("DislikeButton_${dto.postId}", () => dislikeColor);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         IconButton(
           icon: Icon(Icons.mood),
           iconSize: 24,
-          color: _isLiked(dto) ? Colors.green : Colors.black,
+          color: likeColors["LikeButton_${dto.postId}"],
           onPressed: () {
-            print(dto.postId);
+            var currentColor = likeColors["LikeButton_${dto.postId}"];
+            if (currentColor == Colors.green) {
+              // remove request
+              print("Remove");
+               setState(() {
+              likeColors["LikeButton_${dto.postId}"]=Colors.blueGrey;
+            });
+            } else {
+              _rateRequest(true, dto.postId);
+              setState(() {
+                likeColors["LikeButton_${dto.postId}"] = Colors.green;
+              });
+            }
           },
         ),
         IconButton(
           icon: Icon(Icons.mood_bad),
           onPressed: () {
-            print(dto.postId);
+            _rateRequest(false, dto.postId);
           },
           iconSize: 24,
-          color: _isDisliked(dto) ? Colors.red : Colors.black,
+          color: likeColors["DislikeButton_${dto.postId}"],
         ),
         IconButton(
           icon: Icon(Icons.comment),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
+import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
@@ -32,7 +33,7 @@ class ApiService {
   }
 
   static Future<HttpResponseModelBase> addRate(PostRateAddDto dto) async {
-    String url = "";
+    String url = "https://ffindernet.herokuapp.com/api/PostRates/Add";
     var authToken = (await StorageService.getAuth()).token;
 
     Map<String, String> headers = {
@@ -41,10 +42,13 @@ class ApiService {
     };
     String data = jsonEncode(dto.toJson());
     Response response = await post(url, headers: headers, body: data);
-     int statusCode = response.statusCode;
+    int statusCode = response.statusCode;
     String responseBody = response.body;
     Map<String, dynamic> json = jsonDecode(responseBody);
-
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
   }
 
   static Future<UserDetailDto> getMyProfile() async {
