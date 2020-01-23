@@ -225,10 +225,41 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   void _removeRate(PostDetailDto dto) {
-    
+    ApiService.deleteRate(dto.postId, loginResponseDto.id);
+    var willDeleted = this
+        .profileDto
+        .post
+        .firstWhere((p) => p.postId == dto.postId)
+        .rates
+        .firstWhere((rate) =>
+            rate.ownerId == loginResponseDto.id && rate.postId == dto.postId);
+    this
+        .profileDto
+        .post
+        .firstWhere((p) => p.postId == dto.postId)
+        .rates
+        .remove(willDeleted);
   }
 
-  void _switchRate(PostDetailDto dto, bool isLike) {}
+  void _switchRate(PostDetailDto dto, bool isLike) {
+    if (isLike) {
+      var dislikeColor = likeColors["DislikeButton_${dto.postId}"];
+      if (dislikeColor == Colors.red) {
+        _removeRate(dto);
+      }
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      var likeColor = likeColors["LikeButton_${dto.postId}"];
+      if (likeColor == Colors.green) {
+        _removeRate(dto);
+      }
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    }
+  }
 
   _rateRequest(bool isLike, String postId) {
     PostRateAddDto postRateAddDto = new PostRateAddDto();
@@ -237,6 +268,15 @@ class ProfilePageState extends State<ProfilePage> {
     postRateAddDto.ownerId = loginResponseDto.id;
     postRateAddDto.postId = postId;
     postRateAddDto.rateDate = DateTime.now();
+
+    var dto = new PostRateDetailDto();
+    dto.isActive = true;
+    dto.isLike = isLike;
+    dto.ownerId = loginResponseDto.id;
+    dto.postId = postId;
+    dto.rateDate = DateTime.now();
+    this.profileDto.post.firstWhere((p) => p.postId == postId).rates.add(dto);
+
     ApiService.addRate(postRateAddDto);
   }
 
@@ -254,13 +294,15 @@ class ProfilePageState extends State<ProfilePage> {
           iconSize: 24,
           color: likeColors["LikeButton_${dto.postId}"],
           onPressed: () {
+            _switchRate(dto, true);
             var currentColor = likeColors["LikeButton_${dto.postId}"];
+
             if (currentColor == Colors.green) {
               // remove request
-              print("Remove");
-               setState(() {
-              likeColors["LikeButton_${dto.postId}"]=Colors.blueGrey;
-            });
+              _removeRate(dto);
+              setState(() {
+                likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
+              });
             } else {
               _rateRequest(true, dto.postId);
               setState(() {
@@ -272,7 +314,22 @@ class ProfilePageState extends State<ProfilePage> {
         IconButton(
           icon: Icon(Icons.mood_bad),
           onPressed: () {
-            _rateRequest(false, dto.postId);
+            var currentColor = likeColors["DislikeButton_${dto.postId}"];
+
+            _switchRate(dto, false);
+
+            if (currentColor == Colors.red) {
+              // remove request
+              _removeRate(dto);
+              setState(() {
+                likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
+              });
+            } else {
+              _rateRequest(false, dto.postId);
+              setState(() {
+                likeColors["DislikeButton_${dto.postId}"] = Colors.red;
+              });
+            }
           },
           iconSize: 24,
           color: likeColors["DislikeButton_${dto.postId}"],
@@ -296,7 +353,7 @@ class ProfilePageState extends State<ProfilePage> {
       child: Row(
         children: <Widget>[
           Text(
-            "${post.rates.where((data) => data.isLike).toList().length} Likes",
+            "${this.profileDto.post.firstWhere((p) => p.postId == post.postId).rates.where((data) => data.isLike).toList().length} Likes",
             style: TextStyle(
                 fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
           ),
@@ -305,7 +362,7 @@ class ProfilePageState extends State<ProfilePage> {
             width: 5,
           ),
           Text(
-            "${post.rates.where((data) => data.isLike == false).toList().length} Dislikes",
+            "${this.profileDto.post.firstWhere((p) => p.postId == post.postId).rates.where((data) => data.isLike == false).toList().length} Dislikes",
             style: TextStyle(
                 fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
           ),

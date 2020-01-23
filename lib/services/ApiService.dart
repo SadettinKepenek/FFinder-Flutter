@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
@@ -42,6 +43,26 @@ class ApiService {
     };
     String data = jsonEncode(dto.toJson());
     Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    Map<String, dynamic> json = jsonDecode(responseBody);
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
+  }
+
+  static Future<HttpResponseModelBase> deleteRate(
+      String postId, String ownerId) async {
+    String url =
+        "https://ffindernet.herokuapp.com/api/PostRates/Delete/$postId/$ownerId";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    Response response = await delete(url, headers: headers);
     int statusCode = response.statusCode;
     String responseBody = response.body;
     Map<String, dynamic> json = jsonDecode(responseBody);
