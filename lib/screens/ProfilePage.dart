@@ -195,12 +195,17 @@ class ProfilePageState extends State<ProfilePage> {
   _buildPostBody(post) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: .5),
-      child: Image.network(
-        post.postImageUrl,
-        height: 280,
-        cacheHeight: 280,
-        width: MediaQuery.of(context).size.width,
-        fit: BoxFit.fill,
+      child: GestureDetector(
+        onDoubleTap: () {
+          _like(post);
+        },
+        child: Image.network(
+          post.postImageUrl,
+          height: 280,
+          cacheHeight: 280,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.fill,
+        ),
       ),
       decoration: BoxDecoration(
           border: Border(
@@ -261,6 +266,43 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  void _like(PostDetailDto dto) {
+    _switchRate(dto, true);
+    var currentColor = likeColors["LikeButton_${dto.postId}"];
+
+    if (currentColor == Colors.green) {
+      // remove request
+      _removeRate(dto);
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      _rateRequest(true, dto.postId);
+      setState(() {
+        likeColors["LikeButton_${dto.postId}"] = Colors.green;
+      });
+    }
+  }
+
+  void _dislike(PostDetailDto dto) {
+    var currentColor = likeColors["DislikeButton_${dto.postId}"];
+
+    _switchRate(dto, false);
+
+    if (currentColor == Colors.red) {
+      // remove request
+      _removeRate(dto);
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
+      });
+    } else {
+      _rateRequest(false, dto.postId);
+      setState(() {
+        likeColors["DislikeButton_${dto.postId}"] = Colors.red;
+      });
+    }
+  }
+
   _rateRequest(bool isLike, String postId) {
     PostRateAddDto postRateAddDto = new PostRateAddDto();
     postRateAddDto.isActive = true;
@@ -294,42 +336,13 @@ class ProfilePageState extends State<ProfilePage> {
           iconSize: 24,
           color: likeColors["LikeButton_${dto.postId}"],
           onPressed: () {
-            _switchRate(dto, true);
-            var currentColor = likeColors["LikeButton_${dto.postId}"];
-
-            if (currentColor == Colors.green) {
-              // remove request
-              _removeRate(dto);
-              setState(() {
-                likeColors["LikeButton_${dto.postId}"] = Colors.blueGrey;
-              });
-            } else {
-              _rateRequest(true, dto.postId);
-              setState(() {
-                likeColors["LikeButton_${dto.postId}"] = Colors.green;
-              });
-            }
+            _like(dto);
           },
         ),
         IconButton(
           icon: Icon(Icons.mood_bad),
           onPressed: () {
-            var currentColor = likeColors["DislikeButton_${dto.postId}"];
-
-            _switchRate(dto, false);
-
-            if (currentColor == Colors.red) {
-              // remove request
-              _removeRate(dto);
-              setState(() {
-                likeColors["DislikeButton_${dto.postId}"] = Colors.blueGrey;
-              });
-            } else {
-              _rateRequest(false, dto.postId);
-              setState(() {
-                likeColors["DislikeButton_${dto.postId}"] = Colors.red;
-              });
-            }
+            _dislike(dto);
           },
           iconSize: 24,
           color: likeColors["DislikeButton_${dto.postId}"],
