@@ -1,17 +1,21 @@
 import 'dart:convert';
 
+import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateAddDto.dart';
 
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
 
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
+import 'package:ffinder/models/ResponseModels/HttpResponseModelData.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
 import 'StorageService.dart';
@@ -71,6 +75,25 @@ class ApiService {
     return model;
   }
 
+  static Future<HttpResponseModelBase> addCommentRate(CommentRateAddDto dto) async {
+    String url = "https://ffindernet.herokuapp.com/api/CommentRates/Add";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    String data = jsonEncode(dto.toJson());
+    Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    Map<String, dynamic> json = jsonDecode(responseBody);
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
+  }
+
   static Future<HttpResponseModelBase> deleteRate(
       String postId, String ownerId) async {
     String url =
@@ -89,6 +112,53 @@ class ApiService {
     model.message = json["message"];
     model.statusCode = json["statusCode"];
     return model;
+  }
+
+  static Future<HttpResponseModelBase> deleteCommentRate(
+      String commentId, String ownerId) async {
+    String url =
+        "https://ffindernet.herokuapp.com/api/CommentRates/Delete/$commentId/$ownerId";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    Response response = await delete(url, headers: headers);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    Map<String, dynamic> json = jsonDecode(responseBody);
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
+  }
+
+  static Future<HttpResponseModelBase> getPost(
+      {@required String postId}) async {
+    String url = "https://ffindernet.herokuapp.com/api/Posts/GetById?id=$postId";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    Response response = await get(url, headers: headers);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    if (responseBody != "") {
+      Map<String, dynamic> json = jsonDecode(responseBody);
+      if (statusCode == 200) {
+        PostDetailDto dto = PostDetailDto.fromJson(json["data"]);
+        HttpResponseModelData<PostDetailDto> model=new HttpResponseModelData<PostDetailDto>();
+        model.data=dto;
+        model.message="Başarılı";
+        model.statusCode=200;
+        return model;
+      }
+      return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
+    }
+    return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
   }
 
   static Future<UserDetailDto> getMyProfile() async {

@@ -12,8 +12,14 @@ class CommentRateListDto {
   String commentId;
   String ownerId;
   bool isActive;
-  UserListDto owner;
-  CommentListDto comment;
+  String ownerUserName;
+  String ownerFirstname;
+  String ownerLastname;
+  String ownerEmail;
+  String commentBody;
+  DateTime commentDate;
+  String commentOwnerId;
+  String commentPostId;
   CommentRateListDto() {}
 
   factory CommentRateListDto.fromJson(Map<String, dynamic> json) =>
