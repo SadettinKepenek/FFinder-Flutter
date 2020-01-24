@@ -16,12 +16,19 @@ PostRateListDto _$PostRateListDtoFromJson(Map<String, dynamic> json) {
     ..rateDate = json['rateDate'] == null
         ? null
         : DateTime.parse(json['rateDate'] as String)
-    ..post = json['post'] == null
+    ..ownerUserName = json['ownerUserName'] as String
+    ..ownerFirstname = json['ownerFirstname'] as String
+    ..ownerLastname = json['ownerLastname'] as String
+    ..ownerEmail = json['ownerEmail'] as String
+    ..ownerProfilePhoto = json['ownerProfilePhoto'] as String
+    ..postImageUrl = json['postImageUrl'] as String
+    ..postBody = json['postBody'] as String
+    ..postPublishDate = json['postPublishDate'] == null
         ? null
-        : PostListDto.fromJson(json['post'] as Map<String, dynamic>)
-    ..owner = json['owner'] == null
-        ? null
-        : UserListDto.fromJson(json['owner'] as Map<String, dynamic>);
+        : DateTime.parse(json['postPublishDate'] as String)
+    ..postOwnerId = json['postOwnerId'] as String
+    ..postOwnerProfilePhoto = json['postOwnerProfilePhoto'] as String
+    ..postIsActive = json['postIsActive'] as bool;
 }
 
 Map<String, dynamic> _$PostRateListDtoToJson(PostRateListDto instance) =>
@@ -32,6 +39,15 @@ Map<String, dynamic> _$PostRateListDtoToJson(PostRateListDto instance) =>
       'isActive': instance.isActive,
       'isLike': instance.isLike,
       'rateDate': instance.rateDate?.toIso8601String(),
-      'post': instance.post,
-      'owner': instance.owner,
+      'ownerUserName': instance.ownerUserName,
+      'ownerFirstname': instance.ownerFirstname,
+      'ownerLastname': instance.ownerLastname,
+      'ownerEmail': instance.ownerEmail,
+      'ownerProfilePhoto': instance.ownerProfilePhoto,
+      'postImageUrl': instance.postImageUrl,
+      'postBody': instance.postBody,
+      'postPublishDate': instance.postPublishDate?.toIso8601String(),
+      'postOwnerId': instance.postOwnerId,
+      'postOwnerProfilePhoto': instance.postOwnerProfilePhoto,
+      'postIsActive': instance.postIsActive,
     };
