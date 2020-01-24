@@ -1,6 +1,10 @@
+import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
+import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/screens/ProfilePage.dart';
+import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -8,6 +12,7 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
+
   MainPageState() {
     _currentWidget = _children[_currentIndex];
   }
@@ -15,8 +20,12 @@ class MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
   final _children = <int, Widget>{
-    0: Container(child: Text("Deneme1")),
-    1: ProfilePage()
+
+    0: PostPage(),
+    1: ProfilePage(
+      userId: "null",
+    )
+
   };
 
   @override

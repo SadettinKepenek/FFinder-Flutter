@@ -1,10 +1,15 @@
 import 'dart:convert';
 
+
+import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
+
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
+
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:http/http.dart';
@@ -32,6 +37,20 @@ class ApiService {
     }
     return null;
   }
+
+
+  static Future<List<PostDetailDto>> userPostsRequest() async {
+    String url = "https://ffindernet.herokuapp.com/api/Posts/";
+    Map<String, String> headers = {"Content-type": "application/json"};
+    final response = await get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      var responseJson = json.decode(response.body);
+      return (responseJson["data"] as List).map((p) => PostDetailDto.fromJson(p)).toList();
+    } else {
+      // If that response was not OK, throw an error.
+      throw Exception('Failed to load post');
+    }
 
   static Future<HttpResponseModelBase> addRate(PostRateAddDto dto) async {
     String url = "https://ffindernet.herokuapp.com/api/PostRates/Add";
@@ -92,5 +111,6 @@ class ApiService {
     }
 
     return null;
+
   }
 }
