@@ -1,5 +1,6 @@
 import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateAddDto.dart';
 import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateDetailDto.dart';
+import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateListDto.dart';
 import 'package:ffinder/models/Comment_DataTransferObjects/CommentListDto.dart';
 import 'package:ffinder/models/Comment_DataTransferObjects/CommentListDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
@@ -158,7 +159,7 @@ class CommentPageState extends State<CommentPage> {
     commentRateAddDto.commentId = commentId;
     commentRateAddDto.rateDate = DateTime.now();
 
-    var dto = new CommentRateDetailDto();
+    var dto = new CommentRateListDto();
     dto.isActive = true;
     dto.isLike = isLike;
     dto.ownerId = loginResponseDto.id;
@@ -228,7 +229,7 @@ class CommentPageState extends State<CommentPage> {
         children: <Widget>[
           ListTile(
               leading: CircleAvatar(
-                backgroundImage: NetworkImage(comment.owner.profilePhotoUrl),
+                backgroundImage: NetworkImage(comment.ownerProfilePhoto),
                 radius: 25,
               ),
               subtitle: GestureDetector(
@@ -236,7 +237,7 @@ class CommentPageState extends State<CommentPage> {
                     maxLines: 11,
                     text: TextSpan(children: [
                       TextSpan(
-                        text: comment.owner.userName,
+                        text: comment.ownerUserName,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, color: Colors.black),
                       ),

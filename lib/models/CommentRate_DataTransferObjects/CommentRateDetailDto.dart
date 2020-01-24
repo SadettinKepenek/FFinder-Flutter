@@ -16,6 +16,7 @@ class CommentRateDetailDto {
   String ownerFirstname;
   String ownerLastname;
   String ownerEmail;
+    String ownerProfilePhoto;
   String commentBody;
   DateTime commentDate;
   String commentOwnerId;

@@ -1,7 +1,9 @@
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
+import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateListDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
-import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:ffinder/screens/CommentPage.dart';
@@ -221,19 +223,19 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  bool _isLiked(PostDetailDto dto) {
+  bool _isLiked(PostListDto dto) {
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && rate.isLike);
     return isLike;
   }
 
-  bool _isDisliked(PostDetailDto dto) {
+  bool _isDisliked(PostListDto dto) {
     var isLike = dto.rates
         .any((rate) => rate.ownerId == loginResponseDto.id && !rate.isLike);
     return isLike;
   }
 
-  void _removeRate(PostDetailDto dto) {
+  void _removeRate(PostListDto dto) {
     ApiService.deleteRate(dto.postId, loginResponseDto.id);
     var willDeleted = this
         .profileDto
@@ -250,7 +252,7 @@ class ProfilePageState extends State<ProfilePage> {
         .remove(willDeleted);
   }
 
-  void _switchRate(PostDetailDto dto, bool isLike) {
+  void _switchRate(PostListDto dto, bool isLike) {
     if (isLike) {
       var dislikeColor = likeColors["DislikeButton_${dto.postId}"];
       if (dislikeColor == Colors.red) {
@@ -270,7 +272,7 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _like(PostDetailDto dto) {
+  void _like(PostListDto dto) {
     _switchRate(dto, true);
     var currentColor = likeColors["LikeButton_${dto.postId}"];
 
@@ -288,7 +290,7 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void _dislike(PostDetailDto dto) {
+  void _dislike(PostListDto dto) {
     var currentColor = likeColors["DislikeButton_${dto.postId}"];
 
     _switchRate(dto, false);
@@ -315,7 +317,7 @@ class ProfilePageState extends State<ProfilePage> {
     postRateAddDto.postId = postId;
     postRateAddDto.rateDate = DateTime.now();
 
-    var dto = new PostRateDetailDto();
+    var dto = new PostRateListDto();
     dto.isActive = true;
     dto.isLike = isLike;
     dto.ownerId = loginResponseDto.id;
@@ -326,7 +328,7 @@ class ProfilePageState extends State<ProfilePage> {
     ApiService.addRate(postRateAddDto);
   }
 
-  _buildPostActionButtons(PostDetailDto dto) {
+  _buildPostActionButtons(PostListDto dto) {
     var likeColor = _isLiked(dto) ? Colors.green : Colors.blueGrey;
     var dislikeColor = _isDisliked(dto) ? Colors.red : Colors.blueGrey;
     likeColors.putIfAbsent("LikeButton_${dto.postId}", () => likeColor);
@@ -370,7 +372,7 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _buildPostLikes(PostDetailDto post) {
+  _buildPostLikes(PostListDto post) {
     return Padding(
       child: Row(
         children: <Widget>[
@@ -394,7 +396,7 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  _buildPostInfo(PostDetailDto post) {
+  _buildPostInfo(PostListDto post) {
     return Padding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

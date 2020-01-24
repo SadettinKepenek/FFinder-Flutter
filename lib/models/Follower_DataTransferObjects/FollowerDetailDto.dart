@@ -11,8 +11,16 @@ class FollowerDetailDto {
   DateTime friendshipDate;
   bool isAccepted;
   bool isActive;
-  UserDetailDto user1;
-  UserDetailDto user2;
+  String user1UserName;
+  String user1Firstname;
+  String user1Lastname;
+  String user1Email;
+  String user1ProfilePhoto;
+  String user2UserName;
+  String user2Firstname;
+  String user2Lastname;
+  String user2Email;
+  String user2ProfilePhoto;
   FollowerDetailDto() {}
 
   factory FollowerDetailDto.fromJson(Map<String, dynamic> json) =>

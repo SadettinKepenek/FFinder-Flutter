@@ -20,6 +20,7 @@ class CommentListDto {
   String ownerFirstname;
   String ownerLastname;
   String ownerEmail;
+  String ownerProfilePhoto;
   PostListDto post;
   List<CommentRateListDto> rates;
   CommentListDto() {}

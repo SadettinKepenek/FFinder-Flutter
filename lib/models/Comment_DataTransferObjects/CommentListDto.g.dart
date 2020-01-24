@@ -20,6 +20,7 @@ CommentListDto _$CommentListDtoFromJson(Map<String, dynamic> json) {
     ..ownerFirstname = json['ownerFirstname'] as String
     ..ownerLastname = json['ownerLastname'] as String
     ..ownerEmail = json['ownerEmail'] as String
+    ..ownerProfilePhoto = json['ownerProfilePhoto'] as String
     ..post = json['post'] == null
         ? null
         : PostListDto.fromJson(json['post'] as Map<String, dynamic>)
@@ -42,6 +43,7 @@ Map<String, dynamic> _$CommentListDtoToJson(CommentListDto instance) =>
       'ownerFirstname': instance.ownerFirstname,
       'ownerLastname': instance.ownerLastname,
       'ownerEmail': instance.ownerEmail,
+      'ownerProfilePhoto': instance.ownerProfilePhoto,
       'post': instance.post,
       'rates': instance.rates,
     };

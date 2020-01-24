@@ -16,12 +16,16 @@ FollowerListDto _$FollowerListDtoFromJson(Map<String, dynamic> json) {
         : DateTime.parse(json['friendshipDate'] as String)
     ..isAccepted = json['isAccepted'] as bool
     ..isActive = json['isActive'] as bool
-    ..user1 = json['user1'] == null
-        ? null
-        : UserListDto.fromJson(json['user1'] as Map<String, dynamic>)
-    ..user2 = json['user2'] == null
-        ? null
-        : UserListDto.fromJson(json['user2'] as Map<String, dynamic>);
+    ..user1UserName = json['user1UserName'] as String
+    ..user1Firstname = json['user1Firstname'] as String
+    ..user1Lastname = json['user1Lastname'] as String
+    ..user1Email = json['user1Email'] as String
+    ..user1ProfilePhoto = json['user1ProfilePhoto'] as String
+    ..user2UserName = json['user2UserName'] as String
+    ..user2Firstname = json['user2Firstname'] as String
+    ..user2Lastname = json['user2Lastname'] as String
+    ..user2Email = json['user2Email'] as String
+    ..user2ProfilePhoto = json['user2ProfilePhoto'] as String;
 }
 
 Map<String, dynamic> _$FollowerListDtoToJson(FollowerListDto instance) =>
@@ -32,6 +36,14 @@ Map<String, dynamic> _$FollowerListDtoToJson(FollowerListDto instance) =>
       'friendshipDate': instance.friendshipDate?.toIso8601String(),
       'isAccepted': instance.isAccepted,
       'isActive': instance.isActive,
-      'user1': instance.user1,
-      'user2': instance.user2,
+      'user1UserName': instance.user1UserName,
+      'user1Firstname': instance.user1Firstname,
+      'user1Lastname': instance.user1Lastname,
+      'user1Email': instance.user1Email,
+      'user1ProfilePhoto': instance.user1ProfilePhoto,
+      'user2UserName': instance.user2UserName,
+      'user2Firstname': instance.user2Firstname,
+      'user2Lastname': instance.user2Lastname,
+      'user2Email': instance.user2Email,
+      'user2ProfilePhoto': instance.user2ProfilePhoto,
     };

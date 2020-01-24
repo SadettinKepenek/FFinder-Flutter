@@ -20,6 +20,7 @@ CommentRateDetailDto _$CommentRateDetailDtoFromJson(Map<String, dynamic> json) {
     ..ownerFirstname = json['ownerFirstname'] as String
     ..ownerLastname = json['ownerLastname'] as String
     ..ownerEmail = json['ownerEmail'] as String
+    ..ownerProfilePhoto = json['ownerProfilePhoto'] as String
     ..commentBody = json['commentBody'] as String
     ..commentDate = json['commentDate'] == null
         ? null
@@ -41,6 +42,7 @@ Map<String, dynamic> _$CommentRateDetailDtoToJson(
       'ownerFirstname': instance.ownerFirstname,
       'ownerLastname': instance.ownerLastname,
       'ownerEmail': instance.ownerEmail,
+      'ownerProfilePhoto': instance.ownerProfilePhoto,
       'commentBody': instance.commentBody,
       'commentDate': instance.commentDate?.toIso8601String(),
       'commentOwnerId': instance.commentOwnerId,

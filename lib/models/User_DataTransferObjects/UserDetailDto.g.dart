@@ -30,27 +30,26 @@ UserDetailDto _$UserDetailDtoFromJson(Map<String, dynamic> json) {
     ..follower = (json['follower'] as List)
         ?.map((e) => e == null
             ? null
-            : FollowerDetailDto.fromJson(e as Map<String, dynamic>))
+            : FollowerListDto.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..comment = (json['comment'] as List)
         ?.map((e) => e == null
             ? null
-            : CommentDetailDto.fromJson(e as Map<String, dynamic>))
+            : CommentListDto.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..post = (json['post'] as List)
-        ?.map((e) => e == null
-            ? null
-            : PostDetailDto.fromJson(e as Map<String, dynamic>))
+        ?.map((e) =>
+            e == null ? null : PostListDto.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..postRate = (json['postRate'] as List)
         ?.map((e) => e == null
             ? null
-            : PostRateDetailDto.fromJson(e as Map<String, dynamic>))
+            : PostRateListDto.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..commentRate = (json['commentRate'] as List)
         ?.map((e) => e == null
             ? null
-            : CommentRateDetailDto.fromJson(e as Map<String, dynamic>))
+            : CommentRateListDto.fromJson(e as Map<String, dynamic>))
         ?.toList();
 }
 
