@@ -104,50 +104,60 @@ class CommentPageState extends State<CommentPage> {
 
   Widget _buildCommentWidget() {
     var childs = List<Widget>();
-    for (var comment in postDetailDto.comments) {
-      print(comment.rates.length);
-      var child = Card(
-          child: Column(
-        children: <Widget>[
-          ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(comment.ownerProfilePhoto),
-                radius: 25,
-              ),
-              subtitle: GestureDetector(
-                  child: RichText(
-                    maxLines: 11,
-                    text: TextSpan(children: [
-                      TextSpan(
-                        text: comment.ownerUserName,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.black),
-                      ),
-                      TextSpan(
-                          text: "\t\t${timeago.format(comment.commentDate)}",
-                          style: TextStyle(color: Colors.blueGrey)),
-                      TextSpan(
-                        text: "\n",
-                      ),
-                      TextSpan(
-                        text: comment.commentBody.trim(),
-                        style: TextStyle(color: Colors.black),
-                      )
-                    ]),
-                  ),
-                  onDoubleTap: () {})),
-          Row(
-            children: <Widget>[
-              SizedBox(
-                height: .1,
-                width: 70,
-              ),
-            ],
-          )
-        ],
-      ));
+
+    if (postDetailDto.comments == null || postDetailDto.comments.length == 0) {
+      var child=Column(children: <Widget>[
+        SizedBox(width: MediaQuery.of(context).size.width,height: 125,),
+        Text("Herhangi bir yorum yok.")
+      ],);
       childs.add(child);
+    } else {
+      for (var comment in postDetailDto.comments) {
+        print(comment.rates.length);
+        var child = Card(
+            child: Column(
+          children: <Widget>[
+            ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(comment.ownerProfilePhoto),
+                  radius: 25,
+                ),
+                subtitle: GestureDetector(
+                    child: RichText(
+                      maxLines: 11,
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: comment.ownerUserName,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                        TextSpan(
+                            text: "\t\t${timeago.format(comment.commentDate)}",
+                            style: TextStyle(color: Colors.blueGrey)),
+                        TextSpan(
+                          text: "\n",
+                        ),
+                        TextSpan(
+                          text: comment.commentBody.trim(),
+                          style: TextStyle(color: Colors.black),
+                        )
+                      ]),
+                    ),
+                    onDoubleTap: () {})),
+            Row(
+              children: <Widget>[
+                SizedBox(
+                  height: .1,
+                  width: 70,
+                ),
+              ],
+            )
+          ],
+        ));
+        childs.add(child);
+      }
     }
+
     return ListView(children: childs);
   }
 
