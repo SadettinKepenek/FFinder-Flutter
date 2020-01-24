@@ -51,7 +51,7 @@ class ApiService {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
     }
-
+  }
   static Future<HttpResponseModelBase> addRate(PostRateAddDto dto) async {
     String url = "https://ffindernet.herokuapp.com/api/PostRates/Add";
     var authToken = (await StorageService.getAuth()).token;
