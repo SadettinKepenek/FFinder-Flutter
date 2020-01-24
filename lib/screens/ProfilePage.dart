@@ -34,6 +34,7 @@ class ProfilePageState extends State<ProfilePage> {
 
   set mainPageWidget(Widget widget) {
     if (!mounted) return;
+    
     setState(() {
       _mainPageWidget = widget;
     });
