@@ -30,11 +30,11 @@ class UserDetailDto{
   String country;
   String school;
   bool isActive;
-  List<FollowerDetailDto> followers;
-  List<CommentDetailDto> comments;
-  List<PostDetailDto> posts;
-  List<PostRateDetailDto> postRates;
-  List<CommentRateDetailDto> commentRates;
+  List<FollowerDetailDto> follower;
+  List<CommentDetailDto> comment;
+  List<PostDetailDto> post;
+  List<PostRateDetailDto> postRate;
+  List<CommentRateDetailDto> commentRate;
   UserDetailDto();
   factory UserDetailDto.fromJson(Map<String, dynamic> json) => _$UserDetailDtoFromJson(json);
    Map<String, dynamic> toJson() => _$UserDetailDtoToJson(this);

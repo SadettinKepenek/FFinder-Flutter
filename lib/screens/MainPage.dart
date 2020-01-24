@@ -13,7 +13,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
 
-
   MainPageState() {
     _currentWidget = _children[_currentIndex];
   }
@@ -21,10 +20,12 @@ class MainPageState extends State<MainPage> {
   int _currentIndex = 0;
 
   final _children = <int, Widget>{
+
     0: PostPage(),
     1: ProfilePage(
       userId: "null",
     )
+
   };
 
   @override
