@@ -39,9 +39,7 @@ class PostPageState extends State<PostPage> {
   }
 
   _postPageWidgetCompleted() {
-    return Container(
-      child:Text(posts.first.postId)
-    );
+    return Scaffold(body: Container(child: Text(posts.first.postId)));
   }
 
   _postPageWidgetLoading() {

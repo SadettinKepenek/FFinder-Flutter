@@ -115,11 +115,40 @@ class PostCreateState extends State<PostCreatePage> {
             height: 10,
           ),
           Row(
-            children: <Widget>[],
-          ),
-          Row(
             children: <Widget>[
-              
+              Container(
+                child: _image == null
+                    ? Text('No image selected.')
+                    : Image.file(_image),
+              )
+            ],
+          ),
+          Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                      child: Align(
+                          alignment: FractionalOffset.bottomLeft,
+                          child: RaisedButton.icon(
+                            label: Text("Kameradan Yükle"),
+                            icon: Icon(Icons.camera_alt),
+                            onPressed: () {
+                              pickImageFromCamera();
+                            },
+                          ))),
+                  Expanded(
+                      child: Align(
+                          alignment: FractionalOffset.bottomRight,
+                          child: RaisedButton.icon(
+                            label: Text("Galeriden Yükle"),
+                            icon: Icon(Icons.photo),
+                            onPressed: () {
+                              pickImageFromGallery();
+                            },
+                          )))
+                ],
+              )
             ],
           )
         ],
