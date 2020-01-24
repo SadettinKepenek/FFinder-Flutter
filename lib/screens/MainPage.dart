@@ -1,4 +1,5 @@
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
+import 'package:ffinder/screens/PostCreatePage.dart';
 import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/screens/ProfilePage.dart';
 import 'package:ffinder/services/ApiService.dart';
@@ -39,7 +40,9 @@ class MainPageState extends State<MainPage> {
   }
 
   _buildFloatingActionButton() {
-    return FloatingActionButton(onPressed: () {}, child: Icon(Icons.edit));
+    return FloatingActionButton(onPressed: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PostCreatePage()));
+      }, child: Icon(Icons.edit));
   }
 
   void _onTapHandle(int index) {
