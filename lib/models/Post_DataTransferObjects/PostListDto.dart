@@ -14,7 +14,11 @@ class PostListDto{
   DateTime publishDate;
   bool isActive;
   String ownerId;
-  UserListDto owner;
+  String ownerUserName;
+  String ownerFirstname;
+  String ownerLastname;
+  String ownerEmail;
+  String ownerProfilePhoto;
   List<CommentListDto> comments;
   List<PostRateListDto> rates;
   PostListDto();
