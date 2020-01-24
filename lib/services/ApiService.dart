@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
+import 'package:ffinder/models/ResponseModels/HttpResponseModelData.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
 import 'StorageService.dart';
@@ -70,6 +73,31 @@ class ApiService {
     model.message = json["message"];
     model.statusCode = json["statusCode"];
     return model;
+  }
+
+  static Future<HttpResponseModelBase> getPost(
+      {@required String postId}) async {
+    String url = "https://ffindernet.herokuapp.com/api/Posts/Get";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    Response response = await get(url, headers: headers);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    if (responseBody != "") {
+      Map<String, dynamic> json = jsonDecode(responseBody);
+      if (statusCode == 200) {
+        PostDetailDto dto = PostDetailDto.fromJson(json["data"]);
+
+        return HttpResponseModelData.init(
+            data: dto, message: "Başarılı", statusCode: 200);
+      }
+      return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
+    }
+    return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
   }
 
   static Future<UserDetailDto> getMyProfile() async {
