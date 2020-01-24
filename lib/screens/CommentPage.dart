@@ -64,117 +64,6 @@ class CommentPageState extends State<CommentPage> {
     }
   }
 
-  bool _isLiked(CommentListDto dto) {
-    var isLike = dto.rates
-        .any((rate) => rate.ownerId == loginResponseDto.id && rate.isLike);
-    return isLike;
-  }
-
-  bool _isDisliked(CommentListDto dto) {
-    var isLike = dto.rates
-        .any((rate) => rate.ownerId == loginResponseDto.id && !rate.isLike);
-    return isLike;
-  }
-
-  void _switchRate(CommentListDto dto, bool isLike) {
-    if (isLike) {
-      var dislikeColor = likeColors["DislikeButton_${dto.commentId}"];
-      if (dislikeColor == Colors.red) {
-        _removeRate(dto);
-      }
-      setState(() {
-        likeColors["DislikeButton_${dto.commentId}"] = Colors.blueGrey;
-      });
-    } else {
-      var likeColor = likeColors["LikeButton_${dto.commentId}"];
-      if (likeColor == Colors.green) {
-        _removeRate(dto);
-      }
-      setState(() {
-        likeColors["LikeButton_${dto.commentId}"] = Colors.blueGrey;
-      });
-    }
-  }
-
-  void _like(CommentListDto dto) {
-    _switchRate(dto, true);
-    var currentColor = likeColors["LikeButton_${dto.commentId}"];
-
-    if (currentColor == Colors.green) {
-      // remove request
-      _removeRate(dto);
-      setState(() {
-        likeColors["LikeButton_${dto.commentId}"] = Colors.blueGrey;
-      });
-    } else {
-      _rateRequest(true, dto.commentId);
-      setState(() {
-        likeColors["LikeButton_${dto.commentId}"] = Colors.green;
-      });
-    }
-  }
-
-  void _dislike(CommentListDto dto) {
-    var currentColor = likeColors["DislikeButton_${dto.commentId}"];
-
-    _switchRate(dto, false);
-
-    if (currentColor == Colors.red) {
-      // remove request
-      _removeRate(dto);
-      setState(() {
-        likeColors["DislikeButton_${dto.commentId}"] = Colors.blueGrey;
-      });
-    } else {
-      _rateRequest(false, dto.commentId);
-      setState(() {
-        likeColors["DislikeButton_${dto.commentId}"] = Colors.red;
-      });
-    }
-  }
-
-  void _removeRate(CommentListDto dto) {
-    ApiService.deleteCommentRate(dto.commentId, loginResponseDto.id);
-    var willDeleted = this
-        .postDetailDto
-        .comments
-        .firstWhere((p) => p.commentId == dto.commentId)
-        .rates
-        .firstWhere((rate) =>
-            rate.ownerId == loginResponseDto.id &&
-            rate.commentId == dto.commentId);
-    this
-        .postDetailDto
-        .comments
-        .firstWhere((p) => p.commentId == dto.commentId)
-        .rates
-        .remove(willDeleted);
-  }
-
-  _rateRequest(bool isLike, String commentId) {
-    CommentRateAddDto commentRateAddDto = new CommentRateAddDto();
-    commentRateAddDto.isActive = true;
-    commentRateAddDto.isLike = isLike;
-    commentRateAddDto.ownerId = loginResponseDto.id;
-    commentRateAddDto.commentId = commentId;
-    commentRateAddDto.rateDate = DateTime.now();
-
-    var dto = new CommentRateListDto();
-    dto.isActive = true;
-    dto.isLike = isLike;
-    dto.ownerId = loginResponseDto.id;
-    dto.commentId = commentId;
-    dto.rateDate = DateTime.now();
-    this
-        .postDetailDto
-        .comments
-        .firstWhere((p) => p.commentId == commentId)
-        .rates
-        .add(dto);
-
-    ApiService.addCommentRate(commentRateAddDto);
-  }
-
   void _snackBar() {
     globalKey.currentState.showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
@@ -216,13 +105,6 @@ class CommentPageState extends State<CommentPage> {
   Widget _buildCommentWidget() {
     var childs = List<Widget>();
     for (var comment in postDetailDto.comments) {
-      var likeColor = _isLiked(comment) ? Colors.green : Colors.blueGrey;
-      var dislikeColor = _isDisliked(comment) ? Colors.red : Colors.blueGrey;
-      likeColors.putIfAbsent(
-          "LikeButton_${comment.commentId}", () => likeColor);
-      likeColors.putIfAbsent(
-          "DislikeButton_${comment.commentId}", () => dislikeColor);
-
       print(comment.rates.length);
       var child = Card(
           child: Column(
@@ -253,46 +135,13 @@ class CommentPageState extends State<CommentPage> {
                       )
                     ]),
                   ),
-                  onDoubleTap: () {
-                    _like(comment);
-                  })),
+                  onDoubleTap: () {})),
           Row(
             children: <Widget>[
               SizedBox(
                 height: .1,
                 width: 70,
               ),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(Icons.mood),
-                    iconSize: 24,
-                    onPressed: () {
-                      _like(comment);
-                    },
-                    color: likeColors["LikeButton_${comment.commentId}"],
-                  ),
-                  Text(
-                    "${comment.rates.where((rate) => rate.isLike).toList().length}",
-                    style: TextStyle(
-                        color: Colors.black, fontStyle: FontStyle.italic),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.mood_bad),
-                    iconSize: 24,
-                    onPressed: () {
-                      _dislike(comment);
-                    },
-                    color: likeColors["DislikeButton_${comment.commentId}"],
-                  ),
-                  Text(
-                    "${comment.rates.where((rate) => !rate.isLike).toList().length}",
-                    style: TextStyle(
-                        color: Colors.black, fontStyle: FontStyle.italic),
-                  ),
-                ],
-              )
             ],
           )
         ],
