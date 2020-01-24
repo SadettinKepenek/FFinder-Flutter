@@ -406,7 +406,7 @@ class ProfilePageState extends State<ProfilePage> {
             maxLines: 3,
             text: TextSpan(children: [
               TextSpan(
-                text: post.owner.userName,
+                text: post.ownerUserName,
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
               ),
