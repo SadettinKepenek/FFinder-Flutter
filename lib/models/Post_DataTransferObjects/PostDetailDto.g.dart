@@ -22,7 +22,7 @@ PostDetailDto _$PostDetailDtoFromJson(Map<String, dynamic> json) {
     ..comments = (json['comments'] as List)
         ?.map((e) => e == null
             ? null
-            : CommentDetailDto.fromJson(e as Map<String, dynamic>))
+            : CommentListDto.fromJson(e as Map<String, dynamic>))
         ?.toList()
     ..rates = (json['rates'] as List)
         ?.map((e) => e == null

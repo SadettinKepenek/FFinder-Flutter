@@ -23,7 +23,6 @@ class ProfilePageState extends State<ProfilePage> {
   UserDetailDto profileDto;
   Widget _mainPageWidget;
   UserLoginResponseDto loginResponseDto;
-  var likeKeys = Map<String, Widget>();
   var likeColors = Map<String, Color>();
 
   Widget get mainPageWidget {
@@ -357,8 +356,7 @@ class ProfilePageState extends State<ProfilePage> {
           onPressed: () {
             Navigator.push(
               context,
-            
-              MaterialPageRoute(builder: (context) => CommentPage(postId: dto.postId,)),
+              MaterialPageRoute(builder: (context) => CommentPage(postId: dto.postId,),fullscreenDialog: true,),
             );
           },
           iconSize: 24,

@@ -25,7 +25,7 @@ CommentDetailDto _$CommentDetailDtoFromJson(Map<String, dynamic> json) {
     ..rates = (json['rates'] as List)
         ?.map((e) => e == null
             ? null
-            : PostRateDetailDto.fromJson(e as Map<String, dynamic>))
+            : CommentRateDetailDto.fromJson(e as Map<String, dynamic>))
         ?.toList();
 }
 
