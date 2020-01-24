@@ -77,7 +77,7 @@ class ApiService {
 
   static Future<HttpResponseModelBase> getPost(
       {@required String postId}) async {
-    String url = "https://ffindernet.herokuapp.com/api/Posts/Get";
+    String url = "https://ffindernet.herokuapp.com/api/Posts/GetById?id=$postId";
     var authToken = (await StorageService.getAuth()).token;
 
     Map<String, String> headers = {
@@ -91,9 +91,11 @@ class ApiService {
       Map<String, dynamic> json = jsonDecode(responseBody);
       if (statusCode == 200) {
         PostDetailDto dto = PostDetailDto.fromJson(json["data"]);
-
-        return HttpResponseModelData.init(
-            data: dto, message: "Başarılı", statusCode: 200);
+        HttpResponseModelData<PostDetailDto> model=new HttpResponseModelData<PostDetailDto>();
+        model.data=dto;
+        model.message="Başarılı";
+        model.statusCode=200;
+        return model;
       }
       return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
     }

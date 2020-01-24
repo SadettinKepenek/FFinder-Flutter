@@ -16,9 +16,9 @@ class CommentPage extends StatefulWidget {
     this.postId = postId;
   }
 }
-
 class CommentPageState extends State<CommentPage> {
   Widget _mainPageWidget;
+  final globalKey = GlobalKey<ScaffoldState>();
 
   PostDetailDto postDetailDto;
   UserLoginResponseDto loginResponseDto;
@@ -38,22 +38,44 @@ class CommentPageState extends State<CommentPage> {
   }
 
   _loadPost() async {
-    HttpResponseModelData response =
-        await ApiService.getPost(postId: this.widget.postId);
-    this.postDetailDto = response.data;
-    this
-        .postDetailDto
-        .comments
-        .sort((a, b) => b.commentDate.compareTo(a.commentDate));
-    loginResponseDto = await StorageService.getAuth();
-    mainPageWidget = _completedWidget();
+    var response = await ApiService.getPost(postId: this.widget.postId);
+
+    if (response.runtimeType == HttpResponseModelData) {
+      HttpResponseModelData<PostDetailDto> dto = response;
+      this.postDetailDto = dto.data;
+      this
+          .postDetailDto
+          .comments
+          .sort((a, b) => b.commentDate.compareTo(a.commentDate));
+      loginResponseDto = await StorageService.getAuth();
+      mainPageWidget = _completedWidget();
+    } else {
+      _snackBar();
+    }
+  }
+
+  void _snackBar() {
+    globalKey.currentState.showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6.0,
+      content: Text(
+          "Veri çekilirken hata oluştu lütfen daha sonra tekrar deneyiniz."),
+      action: SnackBarAction(
+          label: "Kapat",
+          onPressed: () {
+            Navigator.pop(context);
+            // Nothing
+          }),
+    ));
   }
 
   Widget _loadingWidget() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[CircularProgressIndicator()],
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[CircularProgressIndicator()],
+      ),
     );
   }
 
@@ -69,7 +91,19 @@ class CommentPageState extends State<CommentPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return mainPageWidget;
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+          primarySwatch: Colors.blueGrey,
+          buttonColor: Colors.white,
+          buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary)),
+      home: Scaffold(
+          key: globalKey,
+          body: mainPageWidget,
+          appBar: AppBar(
+            title: Text("FFinder"),
+          )),
+    );
   }
 
   @override
@@ -78,3 +112,4 @@ class CommentPageState extends State<CommentPage> {
     _loadPost();
   }
 }
+
