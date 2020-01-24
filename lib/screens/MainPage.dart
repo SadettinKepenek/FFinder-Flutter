@@ -1,6 +1,11 @@
+import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
+import 'package:ffinder/screens/PostCreatePage.dart';
+import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/screens/ProfilePage.dart';
+import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -14,10 +19,7 @@ class MainPageState extends State<MainPage> {
   Widget _currentWidget;
   int _currentIndex = 0;
 
-  final _children = <int, Widget>{
-    0: Container(child: Text("Deneme1")),
-    1: ProfilePage()
-  };
+  final _children = <int, Widget>{0: PostPage(), 1: ProfilePage()};
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,9 @@ class MainPageState extends State<MainPage> {
   }
 
   _buildFloatingActionButton() {
-    return FloatingActionButton(onPressed: () {}, child: Icon(Icons.edit));
+    return FloatingActionButton(onPressed: () {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => PostCreatePage()));
+      }, child: Icon(Icons.edit));
   }
 
   void _onTapHandle(int index) {
