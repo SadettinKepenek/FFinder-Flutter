@@ -16,16 +16,17 @@ CommentDetailDto _$CommentDetailDtoFromJson(Map<String, dynamic> json) {
     ..ownerId = json['ownerId'] as String
     ..postId = json['postId'] as String
     ..isActive = json['isActive'] as bool
-    ..owner = json['owner'] == null
-        ? null
-        : UserDetailDto.fromJson(json['owner'] as Map<String, dynamic>)
+    ..ownerUserName = json['ownerUserName'] as String
+    ..ownerFirstname = json['ownerFirstname'] as String
+    ..ownerLastname = json['ownerLastname'] as String
+    ..ownerEmail = json['ownerEmail'] as String
     ..post = json['post'] == null
         ? null
         : PostDetailDto.fromJson(json['post'] as Map<String, dynamic>)
     ..rates = (json['rates'] as List)
         ?.map((e) => e == null
             ? null
-            : CommentRateDetailDto.fromJson(e as Map<String, dynamic>))
+            : CommentRateListDto.fromJson(e as Map<String, dynamic>))
         ?.toList();
 }
 
@@ -37,7 +38,10 @@ Map<String, dynamic> _$CommentDetailDtoToJson(CommentDetailDto instance) =>
       'ownerId': instance.ownerId,
       'postId': instance.postId,
       'isActive': instance.isActive,
-      'owner': instance.owner,
+      'ownerUserName': instance.ownerUserName,
+      'ownerFirstname': instance.ownerFirstname,
+      'ownerLastname': instance.ownerLastname,
+      'ownerEmail': instance.ownerEmail,
       'post': instance.post,
       'rates': instance.rates,
     };

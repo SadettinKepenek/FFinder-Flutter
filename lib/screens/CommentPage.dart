@@ -227,31 +227,34 @@ class CommentPageState extends State<CommentPage> {
           child: Column(
         children: <Widget>[
           ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(comment.owner.profilePhotoUrl),
-              radius: 25,
-            ),
-            subtitle: RichText(
-              maxLines: 11,
-              text: TextSpan(children: [
-                TextSpan(
-                  text: comment.owner.userName,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-                TextSpan(
-                    text: "\t\t${timeago.format(comment.commentDate)}",
-                    style: TextStyle(color: Colors.blueGrey)),
-                TextSpan(
-                  text: "\n",
-                ),
-                TextSpan(
-                  text: comment.commentBody.trim(),
-                  style: TextStyle(color: Colors.black),
-                )
-              ]),
-            ),
-          ),
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(comment.owner.profilePhotoUrl),
+                radius: 25,
+              ),
+              subtitle: GestureDetector(
+                  child: RichText(
+                    maxLines: 11,
+                    text: TextSpan(children: [
+                      TextSpan(
+                        text: comment.owner.userName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, color: Colors.black),
+                      ),
+                      TextSpan(
+                          text: "\t\t${timeago.format(comment.commentDate)}",
+                          style: TextStyle(color: Colors.blueGrey)),
+                      TextSpan(
+                        text: "\n",
+                      ),
+                      TextSpan(
+                        text: comment.commentBody.trim(),
+                        style: TextStyle(color: Colors.black),
+                      )
+                    ]),
+                  ),
+                  onDoubleTap: () {
+                    _like(comment);
+                  })),
           Row(
             children: <Widget>[
               SizedBox(
