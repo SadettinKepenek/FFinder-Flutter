@@ -8,8 +8,9 @@ class HttpResponseModelData<T> extends HttpResponseModelBase {
 
   HttpResponseModelData();
 
-  HttpResponseModelData.init({message, statusCode}) {
+  HttpResponseModelData.init({message, statusCode,data}) {
     this.message = message;
     this.statusCode = statusCode;
+    this.data=data;
   }
 }

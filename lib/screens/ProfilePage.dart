@@ -4,6 +4,7 @@ import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:ffinder/screens/CommentPage.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,6 @@ class ProfilePageState extends State<ProfilePage> {
   UserDetailDto profileDto;
   Widget _mainPageWidget;
   UserLoginResponseDto loginResponseDto;
-  var likeKeys = Map<String, Widget>();
   var likeColors = Map<String, Color>();
 
   Widget get mainPageWidget {
@@ -34,12 +34,16 @@ class ProfilePageState extends State<ProfilePage> {
 
   set mainPageWidget(Widget widget) {
     if (!mounted) return;
+
     setState(() {
       _mainPageWidget = widget;
     });
   }
 
   _loadProfile() async {
+
+    
+
     var response = await ApiService.getMyProfile();
     profileDto = response;
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
@@ -349,7 +353,12 @@ class ProfilePageState extends State<ProfilePage> {
         ),
         IconButton(
           icon: Icon(Icons.comment),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CommentPage(postId: dto.postId,),fullscreenDialog: true,),
+            );
+          },
           iconSize: 24,
         ),
         IconButton(

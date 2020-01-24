@@ -16,12 +16,16 @@ CommentRateDetailDto _$CommentRateDetailDtoFromJson(Map<String, dynamic> json) {
     ..commentId = json['commentId'] as String
     ..ownerId = json['ownerId'] as String
     ..isActive = json['isActive'] as bool
-    ..owner = json['owner'] == null
+    ..ownerUserName = json['ownerUserName'] as String
+    ..ownerFirstname = json['ownerFirstname'] as String
+    ..ownerLastname = json['ownerLastname'] as String
+    ..ownerEmail = json['ownerEmail'] as String
+    ..commentBody = json['commentBody'] as String
+    ..commentDate = json['commentDate'] == null
         ? null
-        : UserDetailDto.fromJson(json['owner'] as Map<String, dynamic>)
-    ..comment = json['comment'] == null
-        ? null
-        : CommentDetailDto.fromJson(json['comment'] as Map<String, dynamic>);
+        : DateTime.parse(json['commentDate'] as String)
+    ..commentOwnerId = json['commentOwnerId'] as String
+    ..commentPostId = json['commentPostId'] as String;
 }
 
 Map<String, dynamic> _$CommentRateDetailDtoToJson(
@@ -33,6 +37,12 @@ Map<String, dynamic> _$CommentRateDetailDtoToJson(
       'commentId': instance.commentId,
       'ownerId': instance.ownerId,
       'isActive': instance.isActive,
-      'owner': instance.owner,
-      'comment': instance.comment,
+      'ownerUserName': instance.ownerUserName,
+      'ownerFirstname': instance.ownerFirstname,
+      'ownerLastname': instance.ownerLastname,
+      'ownerEmail': instance.ownerEmail,
+      'commentBody': instance.commentBody,
+      'commentDate': instance.commentDate?.toIso8601String(),
+      'commentOwnerId': instance.commentOwnerId,
+      'commentPostId': instance.commentPostId,
     };
