@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:ffinder/services/ImagePickerService.dart';
@@ -12,6 +13,7 @@ class PostCreatePage extends StatefulWidget {
 }
 
 class PostCreateState extends State<PostCreatePage> {
+  final _formKey = GlobalKey<PostCreateState>();
   File _image;
   UserLoginResponseDto _userResponse;
   Widget _mainWidget;
@@ -19,9 +21,12 @@ class PostCreateState extends State<PostCreatePage> {
     return _userResponse;
   }
 
+  PostAddDto postAddDto;
+
   @override
   void initState() {
     super.initState();
+    postAddDto = new PostAddDto();
   }
 
   Future sleep1() {
@@ -58,6 +63,12 @@ class PostCreateState extends State<PostCreatePage> {
         child: Scaffold(
             appBar: AppBar(
               title: Text("Create Post"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Paylaş"),
+                  onPressed: () {},
+                )
+              ],
             ),
             body: mainWidget));
     return widget;
@@ -74,7 +85,8 @@ class PostCreateState extends State<PostCreatePage> {
   }
 
   Widget get completedPage {
-    return Container(
+    return Form(
+        child: Container(
       margin: EdgeInsets.all(25.0),
       child: Column(
         children: <Widget>[
@@ -100,6 +112,7 @@ class PostCreateState extends State<PostCreatePage> {
           Row(children: <Widget>[
             Expanded(
               child: TextField(
+
                 style: TextStyle(fontSize: 16.0),
                 decoration:
                     InputDecoration.collapsed(hintText: 'Bir şeyler yazın..'),
@@ -107,6 +120,10 @@ class PostCreateState extends State<PostCreatePage> {
                 maxLines: null,
                 maxLength: 150,
                 maxLengthEnforced: true,
+                onChanged: (String value){
+                 postAddDto.postBody = value;
+                },
+
               ),
             ),
           ]),
@@ -114,15 +131,21 @@ class PostCreateState extends State<PostCreatePage> {
             width: MediaQuery.of(context).size.width,
             height: 10,
           ),
-          Row(
+          Expanded(
+              child: Row(
             children: <Widget>[
-              Container(
+              Center(
                 child: _image == null
-                    ? Text('No image selected.')
-                    : Image.file(_image),
+                    ? Text('Lütfen bir resim yükleyin.')
+                    : Image.file(
+                        _image,
+                        width: 350,
+                        height: 280,
+
+                      ),
               )
             ],
-          ),
+          )),
           Column(
             children: <Widget>[
               Row(
@@ -153,7 +176,7 @@ class PostCreateState extends State<PostCreatePage> {
           )
         ],
       ),
-    );
+    ));
   }
 
   pickImageFromGallery() async {
@@ -170,7 +193,8 @@ class PostCreateState extends State<PostCreatePage> {
     });
   }
 
-  Widget displayImage() {
-    return _image == null ? Text('No image selected.') : Image.file(_image);
+  sharePost() {}
+  uploadImageToFirebase(){
+    String _uploadedFileURL;   
   }
 }

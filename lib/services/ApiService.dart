@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateAddDto.dart';
+import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
@@ -182,5 +183,17 @@ class ApiService {
 
     return null;
 
+  }
+  static Future<HttpResponseModel> addUsersPost(
+      PostAddDto postAddDto) async {
+    String url = "https://ffindernet.herokuapp.com/api/Posts/Add";
+    Map<String, String> headers = {"Content-type": "application/json"};
+    String data = jsonEncode(postAddDto);
+    Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    if (statusCode == 200) {
+      return HttpResponseModel.init(message: "Post Başarıyla Eklendi",statusCode: statusCode);
+    }
+          return HttpResponseModel.init(message: "Post Eklenirken Bir Hata Oluştu",statusCode: statusCode);
   }
 }
