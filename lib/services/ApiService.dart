@@ -187,7 +187,12 @@ class ApiService {
   static Future<HttpResponseModel> addUsersPost(
       PostAddDto postAddDto) async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/Add";
-    Map<String, String> headers = {"Content-type": "application/json"};
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
     String data = jsonEncode(postAddDto);
     Response response = await post(url, headers: headers, body: data);
     int statusCode = response.statusCode;

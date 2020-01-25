@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/services/ApiService.dart';
+import 'package:ffinder/services/FirebaseService.dart';
 import 'package:ffinder/services/ImagePickerService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,6 @@ class PostCreatePage extends StatefulWidget {
 }
 
 class PostCreateState extends State<PostCreatePage> {
-  final _formKey = GlobalKey<PostCreateState>();
   File _image;
   UserLoginResponseDto _userResponse;
   Widget _mainWidget;
@@ -21,12 +22,14 @@ class PostCreateState extends State<PostCreatePage> {
     return _userResponse;
   }
 
-  PostAddDto postAddDto;
+  PostAddDto _postAddDto;
+  set postAddDto(PostAddDto postAddDto) {
+    _postAddDto = postAddDto;
+  }
 
   @override
   void initState() {
     super.initState();
-    postAddDto = new PostAddDto();
   }
 
   Future sleep1() {
@@ -38,6 +41,7 @@ class PostCreateState extends State<PostCreatePage> {
     var response = await StorageService.getAuth();
     this._userResponse = response;
     mainWidget = completedPage;
+    _postAddDto = PostAddDto();
   }
 
   set mainWidget(Widget widget) {
@@ -65,8 +69,11 @@ class PostCreateState extends State<PostCreatePage> {
               title: Text("Create Post"),
               actions: <Widget>[
                 FlatButton(
+                  textColor: Colors.white,
                   child: Text("Paylaş"),
-                  onPressed: () {},
+                  onPressed: () {
+                    sharePost();
+                  },
                 )
               ],
             ),
@@ -84,6 +91,7 @@ class PostCreateState extends State<PostCreatePage> {
     );
   }
 
+  TextEditingController textEditingController = new TextEditingController();
   Widget get completedPage {
     return Form(
         child: Container(
@@ -112,7 +120,7 @@ class PostCreateState extends State<PostCreatePage> {
           Row(children: <Widget>[
             Expanded(
               child: TextField(
-
+                controller: textEditingController,
                 style: TextStyle(fontSize: 16.0),
                 decoration:
                     InputDecoration.collapsed(hintText: 'Bir şeyler yazın..'),
@@ -120,10 +128,6 @@ class PostCreateState extends State<PostCreatePage> {
                 maxLines: null,
                 maxLength: 150,
                 maxLengthEnforced: true,
-                onChanged: (String value){
-                 postAddDto.postBody = value;
-                },
-
               ),
             ),
           ]),
@@ -141,7 +145,6 @@ class PostCreateState extends State<PostCreatePage> {
                         _image,
                         width: 350,
                         height: 280,
-
                       ),
               )
             ],
@@ -193,8 +196,25 @@ class PostCreateState extends State<PostCreatePage> {
     });
   }
 
-  sharePost() {}
-  uploadImageToFirebase(){
-    String _uploadedFileURL;   
+  sharePost() async {
+    await uploadImageToFirebase(_image);
+    _postAddDto.isActive = true;
+    _postAddDto.publishDate = DateTime.now();
+    _postAddDto.ownerId = userResponse.id;
+    _postAddDto.postBody = textEditingController.text;
+    textEditingController.clear();
+    var response = await ApiService.addUsersPost(_postAddDto);
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+    } else
+      print("hata");
+  }
+
+  uploadImageToFirebase(File image) async {
+    String _uploadedFileURL;
+    _uploadedFileURL = await FirebaseService.uploadFile(_image);
+    if (_uploadedFileURL != null) {
+      _postAddDto.postImageUrl = _uploadedFileURL;
+    }
   }
 }
