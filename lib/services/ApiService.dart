@@ -6,7 +6,6 @@ import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 
 import 'package:ffinder/models/Comment_DataTransferObjects/CommentAddDto.dart';
 
-
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
 
@@ -16,6 +15,7 @@ import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelData.dart';
+import 'package:ffinder/models/User_DataTransferObjects/UserAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
@@ -42,13 +42,12 @@ class ApiService {
           UserLoginResponseDto.fromJson(json["data"]);
       await StorageService.initAuth(loginResponseDto);
 
-      UserDetailDto userDetailDto=await getMyProfile();
+      UserDetailDto userDetailDto = await getMyProfile();
       await StorageService.initMyProfile(userDetailDto);
       return loginResponseDto;
     }
     return null;
   }
-
 
   static Future<List<PostListDto>> userPostsRequest() async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/";
@@ -57,12 +56,15 @@ class ApiService {
 
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      return (responseJson["data"] as List).map((p) => PostListDto.fromJson(p)).toList();
+      return (responseJson["data"] as List)
+          .map((p) => PostListDto.fromJson(p))
+          .toList();
     } else {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
     }
   }
+
   static Future<HttpResponseModelBase> addRate(PostRateAddDto dto) async {
     String url = "https://ffindernet.herokuapp.com/api/PostRates/Add";
     var authToken = (await StorageService.getAuth()).token;
@@ -82,7 +84,8 @@ class ApiService {
     return model;
   }
 
-  static Future<HttpResponseModelBase> addCommentRate(CommentRateAddDto dto) async {
+  static Future<HttpResponseModelBase> addCommentRate(
+      CommentRateAddDto dto) async {
     String url = "https://ffindernet.herokuapp.com/api/CommentRates/Add";
     var authToken = (await StorageService.getAuth()).token;
 
@@ -162,7 +165,8 @@ class ApiService {
 
   static Future<HttpResponseModelBase> getPost(
       {@required String postId}) async {
-    String url = "https://ffindernet.herokuapp.com/api/Posts/GetById?id=$postId";
+    String url =
+        "https://ffindernet.herokuapp.com/api/Posts/GetById?id=$postId";
     var authToken = (await StorageService.getAuth()).token;
 
     Map<String, String> headers = {
@@ -176,10 +180,11 @@ class ApiService {
       Map<String, dynamic> json = jsonDecode(responseBody);
       if (statusCode == 200) {
         PostDetailDto dto = PostDetailDto.fromJson(json["data"]);
-        HttpResponseModelData<PostDetailDto> model=new HttpResponseModelData<PostDetailDto>();
-        model.data=dto;
-        model.message="Başarılı";
-        model.statusCode=200;
+        HttpResponseModelData<PostDetailDto> model =
+            new HttpResponseModelData<PostDetailDto>();
+        model.data = dto;
+        model.message = "Başarılı";
+        model.statusCode = 200;
         return model;
       }
       return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
@@ -207,10 +212,9 @@ class ApiService {
     }
 
     return null;
-
   }
-  static Future<HttpResponseModel> addUsersPost(
-      PostAddDto postAddDto) async {
+
+  static Future<HttpResponseModel> addUsersPost(PostAddDto postAddDto) async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/Add";
     var authToken = (await StorageService.getAuth()).token;
 
@@ -222,8 +226,24 @@ class ApiService {
     Response response = await post(url, headers: headers, body: data);
     int statusCode = response.statusCode;
     if (statusCode == 200) {
-      return HttpResponseModel.init(message: "Post Başarıyla Eklendi",statusCode: statusCode);
+      return HttpResponseModel.init(
+          message: "Post Başarıyla Eklendi", statusCode: statusCode);
     }
-          return HttpResponseModel.init(message: "Post Eklenirken Bir Hata Oluştu",statusCode: statusCode);
+    return HttpResponseModel.init(
+        message: "Post Eklenirken Bir Hata Oluştu", statusCode: statusCode);
+  }
+
+  static Future<HttpResponseModel> register(UserAddDto userAddDto) async {
+    String url = "https://ffindernet.herokuapp.com/api/Users/Register";
+      Map<String, String> headers = {"Content-type": "application/json"};
+    String data = jsonEncode(userAddDto);
+    Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    if(statusCode == 200){
+      return HttpResponseModel.init(message: "Kayıt başarılı",statusCode: statusCode);
+    }
+    else
+    return HttpResponseModel.init(message: "Kayıt oluşturulurken bir hata oluştu",statusCode: statusCode);
+
   }
 }
