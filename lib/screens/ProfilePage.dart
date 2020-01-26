@@ -184,7 +184,7 @@ class ProfilePageState extends State<ProfilePage> {
                     width: 5,
                   ),
                   Text(
-                    "berkayalcin",
+                    "${profileDto.userName}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
