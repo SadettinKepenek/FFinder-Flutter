@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
+import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/services/ApiService.dart';
+import 'package:ffinder/services/FirebaseService.dart';
 import 'package:ffinder/services/ImagePickerService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +22,11 @@ class PostCreateState extends State<PostCreatePage> {
     return _userResponse;
   }
 
+  PostAddDto _postAddDto;
+  set postAddDto(PostAddDto postAddDto) {
+    _postAddDto = postAddDto;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +41,7 @@ class PostCreateState extends State<PostCreatePage> {
     var response = await StorageService.getAuth();
     this._userResponse = response;
     mainWidget = completedPage;
+    _postAddDto = PostAddDto();
   }
 
   set mainWidget(Widget widget) {
@@ -58,6 +67,15 @@ class PostCreateState extends State<PostCreatePage> {
         child: Scaffold(
             appBar: AppBar(
               title: Text("Create Post"),
+              actions: <Widget>[
+                FlatButton(
+                  textColor: Colors.white,
+                  child: Text("Paylaş"),
+                  onPressed: () {
+                    sharePost();
+                  },
+                )
+              ],
             ),
             body: mainWidget));
     return widget;
@@ -73,8 +91,10 @@ class PostCreateState extends State<PostCreatePage> {
     );
   }
 
+  TextEditingController textEditingController = new TextEditingController();
   Widget get completedPage {
-    return Container(
+    return Form(
+        child: Container(
       margin: EdgeInsets.all(25.0),
       child: Column(
         children: <Widget>[
@@ -100,6 +120,7 @@ class PostCreateState extends State<PostCreatePage> {
           Row(children: <Widget>[
             Expanded(
               child: TextField(
+                controller: textEditingController,
                 style: TextStyle(fontSize: 16.0),
                 decoration:
                     InputDecoration.collapsed(hintText: 'Bir şeyler yazın..'),
@@ -114,15 +135,20 @@ class PostCreateState extends State<PostCreatePage> {
             width: MediaQuery.of(context).size.width,
             height: 10,
           ),
-          Row(
+          Expanded(
+              child: Row(
             children: <Widget>[
-              Container(
+              Center(
                 child: _image == null
-                    ? Text('No image selected.')
-                    : Image.file(_image),
+                    ? Text('Lütfen bir resim yükleyin.')
+                    : Image.file(
+                        _image,
+                        width: 350,
+                        height: 280,
+                      ),
               )
             ],
-          ),
+          )),
           Column(
             children: <Widget>[
               Row(
@@ -153,7 +179,7 @@ class PostCreateState extends State<PostCreatePage> {
           )
         ],
       ),
-    );
+    ));
   }
 
   pickImageFromGallery() async {
@@ -170,7 +196,25 @@ class PostCreateState extends State<PostCreatePage> {
     });
   }
 
-  Widget displayImage() {
-    return _image == null ? Text('No image selected.') : Image.file(_image);
+  sharePost() async {
+    await uploadImageToFirebase(_image);
+    _postAddDto.isActive = true;
+    _postAddDto.publishDate = DateTime.now();
+    _postAddDto.ownerId = userResponse.id;
+    _postAddDto.postBody = textEditingController.text;
+    textEditingController.clear();
+    var response = await ApiService.addUsersPost(_postAddDto);
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+    } else
+      print("hata");
+  }
+
+  uploadImageToFirebase(File image) async {
+    String _uploadedFileURL;
+    _uploadedFileURL = await FirebaseService.uploadFile(_image);
+    if (_uploadedFileURL != null) {
+      _postAddDto.postImageUrl = _uploadedFileURL;
+    }
   }
 }
