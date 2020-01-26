@@ -61,7 +61,7 @@ class CommentPageState extends State<CommentPage> {
           .comments
           .sort((a, b) => b.commentDate.compareTo(a.commentDate));
       loginResponseDto = await StorageService.getAuth();
-      myProfile=await StorageService.getMyProfile();
+      myProfile = await StorageService.getMyProfile();
       mainPageWidget = _completedWidget();
     } else {
       _snackBar();
@@ -147,41 +147,49 @@ class CommentPageState extends State<CommentPage> {
   }
 
   _addCommentRequest() async {
-    CommentAddDto commentAddDto = new CommentAddDto();
-    commentAddDto.commentBody = commentTextController.text;
-    commentAddDto.commentDate = DateTime.now();
-    commentAddDto.isActive = true;
-    commentAddDto.ownerId = loginResponseDto.id;
-    commentAddDto.postId = postDetailDto.postId;
+    try {
+      CommentAddDto commentAddDto = new CommentAddDto();
+      commentAddDto.commentBody = commentTextController.text;
+      commentAddDto.commentDate = DateTime.now();
+      commentAddDto.isActive = true;
+      commentAddDto.ownerId = loginResponseDto.id;
+      commentAddDto.postId = postDetailDto.postId;
 
-    var response = await ApiService.addComment(commentAddDto);
-    if (response.statusCode == 200) {
-      FocusScope.of(context).unfocus();
-      commentTextController.clear();
-      CommentListDto commentListDto = CommentListDto();
-      commentListDto.commentBody = commentTextController.text;
-      commentListDto.commentDate = DateTime.now();
-      commentListDto.isActive = true;
-      commentListDto.ownerId = loginResponseDto.id;
-      commentListDto.postId = postDetailDto.postId;
-      commentListDto.ownerEmail=myProfile.email;
-      commentListDto.ownerProfilePhoto=myProfile.profilePhotoUrl;
-      commentListDto.ownerFirstname=myProfile.firstname;
-      commentListDto.ownerLastname=myProfile.lastname;
+      var response = await ApiService.addComment(commentAddDto);
+      if (response.statusCode == 200) {
+        CommentListDto commentListDto = CommentListDto();
+        commentListDto.commentBody = commentTextController.text;
+        commentListDto.commentDate = DateTime.now();
+        commentListDto.isActive = true;
+        commentListDto.ownerId = loginResponseDto.id;
+        commentListDto.postId = postDetailDto.postId;
+        commentListDto.ownerEmail = myProfile.email;
+        commentListDto.ownerProfilePhoto = myProfile.profilePhotoUrl;
+        commentListDto.ownerFirstname = myProfile.firstname;
+        commentListDto.ownerLastname = myProfile.lastname;
+        commentListDto.ownerUserName = myProfile.userName;
 
-      postDetailDto.comments.add(commentListDto);
-      _addNewComment(commentListDto);
-      // globalKey.currentState.showSnackBar(SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   elevation: 6.0,
-      //   content: Text("Yorum başarıyla eklendi"),
-      // ));
-    } else {
-      // globalKey.currentState.showSnackBar(SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   elevation: 6.0,
-      //   content: Text("Yorum eklenirken hata oluştu"),
-      // ));
+        postDetailDto.comments.add(commentListDto);
+        postDetailDto.comments
+            .sort((a, b) => b.commentDate.compareTo(a.commentDate));
+
+        _addNewComment(commentListDto);
+        FocusScope.of(context).unfocus();
+        commentTextController.clear();
+        globalKey.currentState.showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 6.0,
+          content: Text("Yorum başarıyla eklendi"),
+        ));
+      } else {
+        globalKey.currentState.showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 6.0,
+          content: Text("Yorum eklenirken hata oluştu"),
+        ));
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -189,6 +197,8 @@ class CommentPageState extends State<CommentPage> {
   Widget _addNewComment(CommentListDto comment) {
     var child = Card(
         child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ListTile(
             leading: CircleAvatar(
@@ -227,11 +237,18 @@ class CommentPageState extends State<CommentPage> {
         )
       ],
     ));
+    SizedBox box = SizedBox(
+      child: child,
+      width: MediaQuery.of(context).size.width,
+      height: 65,
+    );
     setState(() {
-      commentWidgets.add(child);
+      commentWidgets.add(box);
     });
   }
+
   Widget _buildCommentWidget() {
+    commentWidgets = new List<Widget>();
     if (postDetailDto.comments == null || postDetailDto.comments.length == 0) {
       var child = Column(
         children: <Widget>[
@@ -243,14 +260,16 @@ class CommentPageState extends State<CommentPage> {
         ],
       );
       commentWidgets.add(child);
+      print(commentWidgets.length);
     } else {
       for (var comment in postDetailDto.comments) {
-        print(comment.rates.length);
         _addNewComment(comment);
       }
     }
 
-    return ListView(children: commentWidgets);
+    return ListView(
+      children: commentWidgets,
+    );
   }
 
   @override
