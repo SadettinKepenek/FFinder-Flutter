@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateDetailDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateListDto.dart';
@@ -43,9 +44,6 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   _loadProfile() async {
-
-    
-
     var response = await ApiService.getMyProfile();
     profileDto = response;
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
@@ -198,21 +196,63 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  _buildPostImagePlaceholder() {
+    return SizedBox(
+      height: 280,
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: CircularProgressIndicator(),
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildPostImageErrorWidget() {
+    return SizedBox(
+      height: 280,
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.error,size: 32,),
+                Text("Resim yüklenilemedi lütfen daha sonra tekrar deneyiniz.")
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  _buildPostImage(post) {
+    var img = CachedNetworkImage(
+      errorWidget: (context, url, error) => _buildPostImageErrorWidget(),
+      imageUrl: post.postImageUrl,
+      height: 280,
+      width: MediaQuery.of(context).size.width,
+      fit: BoxFit.fill,
+      placeholder: (context, url) => _buildPostImagePlaceholder(),
+    );
+    return img;
+  }
+
   _buildPostBody(post) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: .5),
       child: GestureDetector(
-        onDoubleTap: () {
-          _like(post);
-        },
-        child: Image.network(
-          post.postImageUrl,
-          height: 280,
-          cacheHeight: 280,
-          width: MediaQuery.of(context).size.width,
-          fit: BoxFit.fill,
-        ),
-      ),
+          onDoubleTap: () {
+            _like(post);
+          },
+          child: _buildPostImage(post)),
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(width: .5, color: Colors.blueGrey),
@@ -358,7 +398,12 @@ class ProfilePageState extends State<ProfilePage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => CommentPage(postId: dto.postId,),fullscreenDialog: true,),
+              MaterialPageRoute(
+                builder: (context) => CommentPage(
+                  postId: dto.postId,
+                ),
+                fullscreenDialog: true,
+              ),
             );
           },
           iconSize: 24,
@@ -436,25 +481,27 @@ class ProfilePageState extends State<ProfilePage> {
     assert(profileDto != null && profileDto.post != null);
 
     var items = List<Widget>();
-    for (var post in profileDto.post) {
-      var column = Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _buildPostImageTop(),
-          _buildPostBody(post),
-          _buildPostActionButtons(post),
-          _buildPostLikes(post),
-          _buildPostInfo(post),
-          Divider(
-            color: Theme.of(context).primaryColor,
-            thickness: 0.35,
-          ),
-        ],
-      );
+    try {
+      for (var post in profileDto.post) {
+        var column = Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildPostImageTop(),
+            _buildPostBody(post),
+            _buildPostActionButtons(post),
+            _buildPostLikes(post),
+            _buildPostInfo(post),
+            Divider(
+              color: Theme.of(context).primaryColor,
+              thickness: 0.35,
+            ),
+          ],
+        );
 
-      items.add(column);
-    }
+        items.add(column);
+      }
+    } catch (e) {}
     return items;
   }
 
