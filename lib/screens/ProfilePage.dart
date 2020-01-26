@@ -442,7 +442,7 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   _buildPostInfo(PostListDto post) {
-    return Padding(
+    return Align(child: Padding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -474,7 +474,7 @@ class ProfilePageState extends State<ProfilePage> {
         ],
       ),
       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-    );
+    ),alignment: Alignment.bottomLeft,);
   }
 
   List<Widget> _buildPostGridItems() {
