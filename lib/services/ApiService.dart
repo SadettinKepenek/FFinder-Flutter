@@ -42,22 +42,24 @@ class ApiService {
       await StorageService.initAuth(loginResponseDto);
 
       UserDetailDto userDetailDto = await getMyProfile();
+
       await StorageService.initMyProfile(userDetailDto);
       return loginResponseDto;
     }
     return null;
   }
 
-  static Future<List<PostDetailDto>> userPostsRequest() async {
+
+
+  static Future<List<PostListDto>> userPostsRequest() async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/";
     Map<String, String> headers = {"Content-type": "application/json"};
     final response = await get(url, headers: headers);
 
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      return (responseJson["data"] as List)
-          .map((p) => PostDetailDto.fromJson(p))
-          .toList();
+
+      return (responseJson["data"] as List).map((p) => PostListDto.fromJson(p)).toList();
     } else {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
