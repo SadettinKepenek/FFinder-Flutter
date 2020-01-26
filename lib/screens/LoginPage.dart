@@ -2,6 +2,7 @@ import 'package:ffinder/mixins/LoginMixins/LoginValidator_mixin.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:ffinder/screens/MainPage.dart';
+import 'package:ffinder/screens/RegisterPage.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
 
   submitButton() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         RaisedButton(
           child: Text(
@@ -84,6 +85,15 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
                 _snackBar();
               }
             }
+          },
+        ),
+        RaisedButton(
+          child: Text("Kayıt Ol"),
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => RegisterPage()),
+            );
           },
         )
       ],
