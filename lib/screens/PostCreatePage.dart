@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
-import 'package:ffinder/screens/PostPage.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:ffinder/services/FirebaseService.dart';
 import 'package:ffinder/services/ImagePickerService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 
 class PostCreatePage extends StatefulWidget {
   @override
@@ -212,7 +212,8 @@ class PostCreateState extends State<PostCreatePage> {
 
   uploadImageToFirebase(File image) async {
     String _uploadedFileURL;
-    _uploadedFileURL = await FirebaseService.uploadFile(_image);
+    String imageName = "${DateTime.now().millisecondsSinceEpoch.toString() + path.basename(_image.path)}";
+    _uploadedFileURL = await FirebaseService.uploadFile(_image,imageName,userResponse.id);
     if (_uploadedFileURL != null) {
       _postAddDto.postImageUrl = _uploadedFileURL;
     }
