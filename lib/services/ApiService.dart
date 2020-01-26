@@ -1,7 +1,11 @@
 import 'dart:convert';
 
 import 'package:ffinder/models/CommentRate_DataTransferObjects/CommentRateAddDto.dart';
+
 import 'package:ffinder/models/Post_DataTransferObjects/PostAddDto.dart';
+
+import 'package:ffinder/models/Comment_DataTransferObjects/CommentAddDto.dart';
+
 
 import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
@@ -37,7 +41,9 @@ class ApiService {
       UserLoginResponseDto loginResponseDto =
           UserLoginResponseDto.fromJson(json["data"]);
       await StorageService.initAuth(loginResponseDto);
-
+      
+      UserDetailDto userDetailDto=await getMyProfile();
+      await StorageService.initMyProfile(userDetailDto);
       return loginResponseDto;
     }
     return null;
@@ -78,6 +84,25 @@ class ApiService {
 
   static Future<HttpResponseModelBase> addCommentRate(CommentRateAddDto dto) async {
     String url = "https://ffindernet.herokuapp.com/api/CommentRates/Add";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    String data = jsonEncode(dto.toJson());
+    Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    Map<String, dynamic> json = jsonDecode(responseBody);
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
+  }
+
+  static Future<HttpResponseModelBase> addComment(CommentAddDto dto) async {
+    String url = "https://ffindernet.herokuapp.com/api/Comments/Add";
     var authToken = (await StorageService.getAuth()).token;
 
     Map<String, String> headers = {

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginResponseDto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -9,6 +12,20 @@ class StorageService {
     await storage.delete(key: "authId");
     await storage.delete(key: "authExpireDate");
     await storage.delete(key: "authUsername");
+  }
+
+  static Future<void> initMyProfile(UserDetailDto profile) async {
+    FlutterSecureStorage flutterSecureStorage = new FlutterSecureStorage();
+    String profileString = jsonEncode(profile.toJson());
+    await flutterSecureStorage.write(key: "myProfile", value: profileString);
+  }
+
+  static Future<UserDetailDto> getMyProfile() async {
+    FlutterSecureStorage flutterSecureStorage = new FlutterSecureStorage();
+
+    UserDetailDto dto = UserDetailDto.fromJson(
+        jsonDecode(await flutterSecureStorage.read(key: "myProfile")));
+    return dto;
   }
 
   static Future<void> initAuth(UserLoginResponseDto dto) async {

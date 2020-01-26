@@ -34,15 +34,25 @@ class MainPageState extends State<MainPage> {
           bottomNavigationBar: _buildBottomNavigaton(),
           body: _currentWidget,
           appBar: AppBar(
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.message),
+                color: Colors.black,
+                onPressed: (){},
+              )
+            ],
             title: Text("FFinder"),
           )),
     );
   }
 
   _buildFloatingActionButton() {
-    return FloatingActionButton(onPressed: () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => PostCreatePage()));
-      }, child: Icon(Icons.edit));
+    return FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => PostCreatePage()));
+        },
+        child: Icon(Icons.edit));
   }
 
   void _onTapHandle(int index) {
