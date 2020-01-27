@@ -113,7 +113,7 @@ class ProfilePageState extends State<ProfilePage> {
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: 20,
+            height: 30,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -140,19 +140,7 @@ class ProfilePageState extends State<ProfilePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
-                child: Text("Takip Et"),
-                onPressed: () {},
-                elevation: 10,
-              ),
-              SizedBox(
-                width: 2,
-              ),
-              RaisedButton(
-                child: Text("Mesaj"),
-                onPressed: () {},
-                elevation: 10,
-              )
+            
             ],
           )
         ],

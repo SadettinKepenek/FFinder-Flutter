@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateAddDto.dart';
 import 'package:ffinder/models/PostRate_DataTransferObjects/PostRateListDto.dart';
 import 'package:ffinder/models/Post_DataTransferObjects/PostListDto.dart';
+import 'package:ffinder/screens/MainPage.dart';
 import 'package:ffinder/services/ApiService.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -18,6 +20,7 @@ class PostPageState extends State<PostPage> {
   List<PostListDto> posts;
   Widget _postPageWidget;
   var likeColors = Map<String, Color>();
+
   Widget get postPageWidget {
     if (posts == null) {
       return _postPageWidgetLoading();
@@ -82,6 +85,18 @@ class PostPageState extends State<PostPage> {
     );
   }
 
+  _openProfile({String userName}) async {
+    var user = await StorageService.getAuth();
+    MainPageState state = context.findRootAncestorStateOfType<MainPageState>();
+
+    if (user.username != userName) {
+    } else {
+      setState(() {
+        state.onTapHandle(1);
+      });
+    }
+  }
+
   List<Widget> _buildPostGridItems() {
     assert(posts != null);
     var items = List<Widget>();
@@ -118,17 +133,24 @@ class PostPageState extends State<PostPage> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  CircleAvatar(
-                    backgroundImage: NetworkImage(post.ownerProfilePhoto),
-                    radius: 15,
-                    backgroundColor: Colors.transparent,
+                  GestureDetector(
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(post.ownerProfilePhoto),
+                      radius: 15,
+                      backgroundColor: Colors.transparent,
+                    ),
+                    onTap: () => {_openProfile(userName: post.ownerUserName)},
                   ),
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                    "${post.ownerUserName}",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  InkWell(
+                    child: Text(
+                      "${post.ownerUserName}",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () => {_openProfile(userName: post.ownerUserName)},
                   ),
                 ],
               )
@@ -293,6 +315,9 @@ class PostPageState extends State<PostPage> {
               maxLines: 3,
               text: TextSpan(children: [
                 TextSpan(
+                  recognizer: TapGestureRecognizer()
+                    ..onTap =
+                        () => {_openProfile(userName: post.ownerUserName)},
                   text: post.ownerUserName,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.black),
