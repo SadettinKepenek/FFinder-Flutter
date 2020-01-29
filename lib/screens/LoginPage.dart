@@ -65,8 +65,10 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
 
   submitButton() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
+                SizedBox(
+          width: 60,
+        ),
         RaisedButton(
           child: Text(
             "Giriş",
@@ -86,6 +88,9 @@ class LoginPageState extends State<LoginPage> with LoginValidator {
               }
             }
           },
+        ),
+        SizedBox(
+          width: 60,
         ),
         RaisedButton(
           child: Text("Kayıt Ol"),
