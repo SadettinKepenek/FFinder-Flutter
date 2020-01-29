@@ -15,6 +15,7 @@ import 'package:ffinder/models/Post_DataTransferObjects/PostDetailDto.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModel.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelBase.dart';
 import 'package:ffinder/models/ResponseModels/HttpResponseModelData.dart';
+import 'package:ffinder/models/User_DataTransferObjects/UserAddDto.dart';
 import 'package:ffinder/models/User_DataTransferObjects/UserDetailDto.dart';
 
 import 'package:ffinder/models/User_DataTransferObjects/UserLoginRequestDto.dart';
@@ -50,7 +51,6 @@ class ApiService {
   }
 
 
-
   static Future<List<PostListDto>> userPostsRequest() async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/";
     Map<String, String> headers = {"Content-type": "application/json"};
@@ -58,7 +58,6 @@ class ApiService {
 
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-
       return (responseJson["data"] as List).map((p) => PostListDto.fromJson(p)).toList();
     } else {
       // If that response was not OK, throw an error.
@@ -255,5 +254,20 @@ class ApiService {
     }
     return HttpResponseModel.init(
         message: "Post Eklenirken Bir Hata Oluştu", statusCode: statusCode);
+
+  }
+
+  static Future<HttpResponseModel> register(UserAddDto userAddDto) async {
+    String url = "https://ffindernet.herokuapp.com/api/Users/Register";
+      Map<String, String> headers = {"Content-type": "application/json"};
+    String data = jsonEncode(userAddDto);
+    Response response = await post(url, headers: headers, body: data);
+    int statusCode = response.statusCode;
+    if(statusCode == 200){
+      return HttpResponseModel.init(message: "Kayıt başarılı",statusCode: statusCode);
+    }
+    else
+    return HttpResponseModel.init(message: "Kayıt oluşturulurken bir hata oluştu",statusCode: statusCode);
+
   }
 }
