@@ -14,7 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({Key key}) : super(key: key) {}
+  String userName;
+  ProfilePage({Key key, String userName}) : super(key: key) {
+    this.userName = userName;
+  }
 
   @override
   State<StatefulWidget> createState() {
@@ -27,6 +30,7 @@ class ProfilePageState extends State<ProfilePage> {
   Widget _mainPageWidget;
   UserLoginResponseDto loginResponseDto;
   var likeColors = Map<String, Color>();
+  bool _isProfile=false;
 
   Widget get mainPageWidget {
     if (profileDto == null) {
@@ -44,8 +48,14 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   _loadProfile() async {
-    var response = await ApiService.getMyProfile();
-    profileDto = response;
+    UserDetailDto detailDto;
+    if(_isProfile){
+      detailDto=await ApiService.getMyProfile();
+    }
+    else{
+      detailDto=await ApiService.getMyProfile(userName: this.widget.userName);
+    }
+    profileDto = detailDto;
     profileDto.post.sort((a, b) => b.publishDate.compareTo(a.publishDate));
     loginResponseDto = await StorageService.getAuth();
     mainPageWidget = _mainPageWidgetCompleted();
@@ -54,6 +64,7 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+    _isProfile=this.widget.userName==null || this.widget.userName=="";
     _loadProfile();
   }
 
@@ -102,7 +113,7 @@ class ProfilePageState extends State<ProfilePage> {
       child: Column(
         children: <Widget>[
           SizedBox(
-            height: 20,
+            height: 30,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -129,19 +140,7 @@ class ProfilePageState extends State<ProfilePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
-                child: Text("Takip Et"),
-                onPressed: () {},
-                elevation: 10,
-              ),
-              SizedBox(
-                width: 2,
-              ),
-              RaisedButton(
-                child: Text("Mesaj"),
-                onPressed: () {},
-                elevation: 10,
-              )
+            
             ],
           )
         ],
@@ -184,7 +183,7 @@ class ProfilePageState extends State<ProfilePage> {
                     width: 5,
                   ),
                   Text(
-                    "berkayalcin",
+                    "${profileDto.userName}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -223,7 +222,10 @@ class ProfilePageState extends State<ProfilePage> {
           Center(
             child: Row(
               children: <Widget>[
-                Icon(Icons.error,size: 32,),
+                Icon(
+                  Icons.error,
+                  size: 32,
+                ),
                 Text("Resim yüklenilemedi lütfen daha sonra tekrar deneyiniz.")
               ],
             ),
@@ -442,39 +444,42 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   _buildPostInfo(PostListDto post) {
-    return Align(child: Padding(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          RichText(
-            maxLines: 3,
-            text: TextSpan(children: [
-              TextSpan(
-                text: post.ownerUserName,
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-              ),
-              TextSpan(text: " "),
-              TextSpan(
-                text: post.postBody,
-                style: DefaultTextStyle.of(context).style,
-              )
-            ]),
-          ),
-          SizedBox(
-            height: .5,
-          ),
-          Text(
-            timeago.format(post.publishDate),
-            maxLines: 1,
-            style: TextStyle(
-                fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
-          ),
-        ],
+    return Align(
+      child: Padding(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            RichText(
+              maxLines: 3,
+              text: TextSpan(children: [
+                TextSpan(
+                  text: post.ownerUserName,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+                TextSpan(text: " "),
+                TextSpan(
+                  text: post.postBody,
+                  style: DefaultTextStyle.of(context).style,
+                )
+              ]),
+            ),
+            SizedBox(
+              height: .5,
+            ),
+            Text(
+              timeago.format(post.publishDate),
+              maxLines: 1,
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       ),
-      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-    ),alignment: Alignment.bottomLeft,);
+      alignment: Alignment.bottomLeft,
+    );
   }
 
   List<Widget> _buildPostGridItems() {

@@ -43,11 +43,13 @@ class ApiService {
       await StorageService.initAuth(loginResponseDto);
 
       UserDetailDto userDetailDto = await getMyProfile();
+
       await StorageService.initMyProfile(userDetailDto);
       return loginResponseDto;
     }
     return null;
   }
+
 
   static Future<List<PostListDto>> userPostsRequest() async {
     String url = "https://ffindernet.herokuapp.com/api/Posts/";
@@ -56,9 +58,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       var responseJson = json.decode(response.body);
-      return (responseJson["data"] as List)
-          .map((p) => PostListDto.fromJson(p))
-          .toList();
+      return (responseJson["data"] as List).map((p) => PostListDto.fromJson(p)).toList();
     } else {
       // If that response was not OK, throw an error.
       throw Exception('Failed to load post');
@@ -143,6 +143,25 @@ class ApiService {
     return model;
   }
 
+  static Future<HttpResponseModelBase> deleteComment(String commentId) async {
+    String url =
+        "https://ffindernet.herokuapp.com/api/Comments/Delete/$commentId";
+    var authToken = (await StorageService.getAuth()).token;
+
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Authorization": "Bearer $authToken"
+    };
+    Response response = await delete(url, headers: headers);
+    int statusCode = response.statusCode;
+    String responseBody = response.body;
+    Map<String, dynamic> json = jsonDecode(responseBody);
+    HttpResponseModelBase model = new HttpResponseModel();
+    model.message = json["message"];
+    model.statusCode = json["statusCode"];
+    return model;
+  }
+
   static Future<HttpResponseModelBase> deleteCommentRate(
       String commentId, String ownerId) async {
     String url =
@@ -192,8 +211,12 @@ class ApiService {
     return HttpResponseModel.init(message: "Hata Oluştu", statusCode: 400);
   }
 
-  static Future<UserDetailDto> getMyProfile() async {
-    String url = "https://ffindernet.herokuapp.com/api/Users/";
+  static Future<UserDetailDto> getMyProfile({String userName}) async {
+    String url = "";
+    if (userName!=null && userName != "")
+      url = "https://ffindernet.herokuapp.com/api/Users/$userName";
+    else
+      url = "https://ffindernet.herokuapp.com/api/Users/";
     var authToken = (await StorageService.getAuth()).token;
 
     Map<String, String> headers = {
@@ -231,6 +254,7 @@ class ApiService {
     }
     return HttpResponseModel.init(
         message: "Post Eklenirken Bir Hata Oluştu", statusCode: statusCode);
+
   }
 
   static Future<HttpResponseModel> register(UserAddDto userAddDto) async {

@@ -61,7 +61,8 @@ class CommentPageState extends State<CommentPage> {
           .comments
           .sort((a, b) => b.commentDate.compareTo(a.commentDate));
       loginResponseDto = await StorageService.getAuth();
-      myProfile=await StorageService.getMyProfile();
+      myProfile = await StorageService.getMyProfile();
+      _buildCommentWidget();
       mainPageWidget = _completedWidget();
     } else {
       _snackBar();
@@ -100,7 +101,7 @@ class CommentPageState extends State<CommentPage> {
       child: Column(
         children: <Widget>[
           Expanded(
-            child: _buildCommentWidget(),
+            child: commentsWidget,
           ),
           SizedBox(
             height: 70,
@@ -147,50 +148,114 @@ class CommentPageState extends State<CommentPage> {
   }
 
   _addCommentRequest() async {
-    CommentAddDto commentAddDto = new CommentAddDto();
-    commentAddDto.commentBody = commentTextController.text;
-    commentAddDto.commentDate = DateTime.now();
-    commentAddDto.isActive = true;
-    commentAddDto.ownerId = loginResponseDto.id;
-    commentAddDto.postId = postDetailDto.postId;
+    try {
+      CommentAddDto commentAddDto = new CommentAddDto();
+      commentAddDto.commentBody = commentTextController.text;
+      commentAddDto.commentDate = DateTime.now();
+      commentAddDto.isActive = true;
+      commentAddDto.ownerId = loginResponseDto.id;
+      commentAddDto.postId = postDetailDto.postId;
 
-    var response = await ApiService.addComment(commentAddDto);
-    if (response.statusCode == 200) {
-      FocusScope.of(context).unfocus();
-      commentTextController.clear();
-      CommentListDto commentListDto = CommentListDto();
-      commentListDto.commentBody = commentTextController.text;
-      commentListDto.commentDate = DateTime.now();
-      commentListDto.isActive = true;
-      commentListDto.ownerId = loginResponseDto.id;
-      commentListDto.postId = postDetailDto.postId;
-      commentListDto.ownerEmail=myProfile.email;
-      commentListDto.ownerProfilePhoto=myProfile.profilePhotoUrl;
-      commentListDto.ownerFirstname=myProfile.firstname;
-      commentListDto.ownerLastname=myProfile.lastname;
+      var response = await ApiService.addComment(commentAddDto);
+      if (response.statusCode == 200) {
+        CommentListDto commentListDto = CommentListDto();
+        commentListDto.commentBody = commentTextController.text;
+        commentListDto.commentDate = DateTime.now();
+        commentListDto.isActive = true;
+        commentListDto.ownerId = loginResponseDto.id;
+        commentListDto.postId = postDetailDto.postId;
+        commentListDto.ownerEmail = myProfile.email;
+        commentListDto.ownerProfilePhoto = myProfile.profilePhotoUrl;
+        commentListDto.ownerFirstname = myProfile.firstname;
+        commentListDto.ownerLastname = myProfile.lastname;
+        commentListDto.ownerUserName = myProfile.userName;
+        commentListDto.commentId = response.message;
+        postDetailDto.comments.add(commentListDto);
+        postDetailDto.comments
+            .sort((a, b) => b.commentDate.compareTo(a.commentDate));
 
-      postDetailDto.comments.add(commentListDto);
-      _addNewComment(commentListDto);
-      // globalKey.currentState.showSnackBar(SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   elevation: 6.0,
-      //   content: Text("Yorum başarıyla eklendi"),
-      // ));
-    } else {
-      // globalKey.currentState.showSnackBar(SnackBar(
-      //   behavior: SnackBarBehavior.floating,
-      //   elevation: 6.0,
-      //   content: Text("Yorum eklenirken hata oluştu"),
-      // ));
+        // _addNewComment(commentListDto);
+        _buildCommentWidget();
+        FocusScope.of(context).unfocus();
+        commentTextController.clear();
+        globalKey.currentState.showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 6.0,
+          content: Text("Yorum başarıyla eklendi"),
+        ));
+      } else {
+        globalKey.currentState.showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 6.0,
+          content: Text("Yorum eklenirken hata oluştu"),
+        ));
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
-  List<Widget> commentWidgets = List<Widget>();
+  var commentItems = Map<String, Widget>();
+  Widget commentsWidget;
+
+  _deleteCommentRequest(CommentListDto comment) async {
+    try {
+      var response = await ApiService.deleteComment(comment.commentId);
+      if (response.statusCode == 200) {
+        globalKey.currentState.showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 6.0,
+          content: Text("Başarıyla silindi"),
+        ));
+        setState(() {
+          commentItems.remove("Comment_${comment.commentId}");
+          postDetailDto.comments.remove(postDetailDto.comments.firstWhere((comment)=>comment.commentId==comment.commentId));
+          _buildCommentWidget();
+        });
+      } else {
+        _buildCommentDeleteSnackbar(comment);
+      }
+    } catch (e) {
+      _buildCommentDeleteSnackbar(comment);
+    }
+  }
+
+  _buildCommentDeleteSnackbar(CommentListDto comment) {
+    globalKey.currentState.showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      elevation: 6.0,
+      content: Text("Silinirken hata oluştu."),
+      action: SnackBarAction(
+          label: "Tekrar Dene",
+          onPressed: () {
+            _deleteCommentRequest(comment);
+            // Nothing
+          }),
+    ));
+  }
+
+  _buildCommentDeleteButton(CommentListDto comment) {
+    if (comment.ownerId == loginResponseDto.id) {
+      return IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          _deleteCommentRequest(comment);
+        },
+      );
+    } else {
+      return Text("");
+    }
+  }
+
   Widget _addNewComment(CommentListDto comment) {
     var child = Card(
         child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ListTile(
+            key: Key("${comment.commentId}"),
+            trailing: _buildCommentDeleteButton(comment),
             leading: CircleAvatar(
               backgroundImage: NetworkImage(comment.ownerProfilePhoto),
               radius: 25,
@@ -224,14 +289,24 @@ class CommentPageState extends State<CommentPage> {
               width: 70,
             ),
           ],
-        )
+        ),
       ],
     ));
+    SizedBox box = SizedBox(
+      child: child,
+      width: MediaQuery.of(context).size.width,
+      height: 65,
+    );
     setState(() {
-      commentWidgets.add(child);
+      commentItems.putIfAbsent("Comment_${comment.commentId}", () => box);
+      commentsWidget = ListView(
+        children: commentItems.values.toList(),
+      );
     });
   }
+
   Widget _buildCommentWidget() {
+    commentItems.clear();
     if (postDetailDto.comments == null || postDetailDto.comments.length == 0) {
       var child = Column(
         children: <Widget>[
@@ -242,15 +317,18 @@ class CommentPageState extends State<CommentPage> {
           Text("Herhangi bir yorum yok.")
         ],
       );
-      commentWidgets.add(child);
+      commentItems.putIfAbsent("NoContent", () => child);
     } else {
       for (var comment in postDetailDto.comments) {
-        print(comment.rates.length);
         _addNewComment(comment);
       }
     }
-
-    return ListView(children: commentWidgets);
+    commentsWidget = ListView(
+      children: commentItems.values.toList(),
+    );
+    return ListView(
+      children: commentItems.values.toList(),
+    );
   }
 
   @override

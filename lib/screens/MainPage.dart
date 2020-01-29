@@ -14,12 +14,12 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   MainPageState() {
-    _currentWidget = _children[_currentIndex];
+    currentWidget = children[currentIndex];
   }
-  Widget _currentWidget;
-  int _currentIndex = 0;
+  Widget currentWidget;
+  int currentIndex = 0;
 
-  final _children = <int, Widget>{0: PostPage(), 1: ProfilePage()};
+  final children = <int, Widget>{0: PostPage(), 1: ProfilePage()};
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +32,13 @@ class MainPageState extends State<MainPage> {
       home: Scaffold(
           floatingActionButton: _buildFloatingActionButton(),
           bottomNavigationBar: _buildBottomNavigaton(),
-          body: _currentWidget,
+          body: currentWidget,
           appBar: AppBar(
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.message),
                 color: Colors.black,
-                onPressed: (){},
+                onPressed: () {},
               )
             ],
             title: Text("FFinder"),
@@ -55,18 +55,20 @@ class MainPageState extends State<MainPage> {
         child: Icon(Icons.edit));
   }
 
-  void _onTapHandle(int index) {
+
+
+  void onTapHandle(int index) {
     setState(() {
-      _currentIndex = index;
-      _currentWidget = _children[index];
+      currentIndex = index;
+      currentWidget = children[index];
       print(index);
     });
   }
 
   _buildBottomNavigaton() {
     return BottomNavigationBar(
-      onTap: _onTapHandle,
-      currentIndex: _currentIndex, // this will be set when a new tab is tapped
+      onTap: onTapHandle,
+      currentIndex: currentIndex, // this will be set when a new tab is tapped
       items: [
         BottomNavigationBarItem(
           icon: new Icon(Icons.home),
